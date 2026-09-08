@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "AgentSam",
+      "hasCanvas": false,
+      "bodyTextLen": 498,
+      "bodyTextHash": "5c78f07f8c76befda1fe97bcb3d2a472ff22753c7a01549d6a85a22c3dea9e0d",
+      "bodyTextPrefix": "Studio Work PINNED Studio Apr 30 INNERANIMALMEDIA Studio You are",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "AgentSam",
+      "hasCanvas": false,
+      "bodyTextLen": 441,
+      "bodyTextHash": "44cffb5fdc5ccd810c90cdcf01c5771dc11dc532a557d460286e0dbc3e90a2fe",
+      "bodyTextPrefix": "You are in AgentSam Work. This pane is a stored trail. Projects ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

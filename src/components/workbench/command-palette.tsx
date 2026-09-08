@@ -1,0 +1,156 @@
+import { useEffect, useState } from "react";
+import { Command } from "cmdk";
+import { Box, FileCode, FolderGit2, Globe, MessageSquare, Plus, Search, SquareTerminal, Upload } from "lucide-react";
+import { useWorkStore } from "@/lib/work/store";
+
+export function CommandPalette() {
+  const [open, setOpen] = useState(false);
+  const trails = useWorkStore((s) => s.trails);
+  const projects = useWorkStore((s) => s.projects);
+  const startTrail = useWorkStore((s) => s.startTrail);
+  const setActiveTrail = useWorkStore((s) => s.setActiveTrail);
+  const setActiveProject = useWorkStore((s) => s.setActiveProject);
+  const openSideTab = useWorkStore((s) => s.openSideTab);
+  const toggleSidebar = useWorkStore((s) => s.toggleSidebar);
+  const toggleTerminal = useWorkStore((s) => s.toggleTerminal);
+  const createProject = useWorkStore((s) => s.createProject);
+  const setNavView = useWorkStore((s) => s.setNavView);
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setOpen((v) => !v);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  return (
+    <Command.Dialog
+      open={open}
+      onOpenChange={setOpen}
+      label="Command palette"
+      overlayClassName="fixed inset-0 z-50 bg-ink/60"
+      contentClassName="fixed top-[18vh] left-1/2 z-50 w-[min(36rem,calc(100vw-1.5rem))] -translate-x-1/2"
+    >
+      <Command.Input placeholder="Search trails, projects, or run a command" />
+      <Command.List>
+        <Command.Empty>Nothing matches.</Command.Empty>
+        <Command.Group heading="Actions">
+          <Command.Item
+            onSelect={() => {
+              startTrail();
+              setOpen(false);
+            }}
+          >
+            <Plus className="size-4" />
+            New trail
+          </Command.Item>
+          <Command.Item
+            onSelect={() => {
+              createProject();
+              setOpen(false);
+            }}
+          >
+            <FolderGit2 className="size-4" />
+            New project
+          </Command.Item>
+          <Command.Item
+            onSelect={() => {
+              openSideTab("chat");
+              setOpen(false);
+            }}
+          >
+            <MessageSquare className="size-4" />
+            New side chat
+          </Command.Item>
+          <Command.Item
+            onSelect={() => {
+              toggleTerminal();
+              setOpen(false);
+            }}
+          >
+            <SquareTerminal className="size-4" />
+            Toggle CLI
+          </Command.Item>
+          <Command.Item
+            onSelect={() => {
+              openSideTab("browser", { ephemeral: false });
+              setOpen(false);
+            }}
+          >
+            <Globe className="size-4" />
+            Open browser
+          </Command.Item>
+          <Command.Item
+            onSelect={() => {
+              openSideTab("files", { ephemeral: false });
+              setOpen(false);
+            }}
+          >
+            <FileCode className="size-4" />
+            Open files
+          </Command.Item>
+          <Command.Item
+            onSelect={() => {
+              openSideTab("artifacts", { ephemeral: false });
+              setOpen(false);
+            }}
+          >
+            <Box className="size-4" />
+            Open artifacts
+          </Command.Item>
+          <Command.Item
+            onSelect={() => {
+              openSideTab("deploy", { ephemeral: false });
+              setOpen(false);
+            }}
+          >
+            <Upload className="size-4" />
+            Ship
+          </Command.Item>
+          <Command.Item
+            onSelect={() => {
+              toggleSidebar();
+              setOpen(false);
+            }}
+          >
+            <Search className="size-4" />
+            Toggle sidebar
+          </Command.Item>
+        </Command.Group>
+        <Command.Group heading="Projects">
+          {projects.map((project) => (
+            <Command.Item
+              key={project.id}
+              value={`project ${project.name}`}
+              onSelect={() => {
+                setActiveProject(project.id);
+                setNavView("trails");
+                setOpen(false);
+              }}
+            >
+              {project.name}
+            </Command.Item>
+          ))}
+        </Command.Group>
+        <Command.Group heading="Trails">
+          {trails.map((trail) => (
+            <Command.Item
+              key={trail.id}
+              value={trail.title}
+              onSelect={() => {
+                setActiveTrail(trail.id);
+                setOpen(false);
+              }}
+            >
+              {trail.title}
+            </Command.Item>
+          ))}
+        </Command.Group>
+      </Command.List>
+    </Command.Dialog>
+  );
+}
