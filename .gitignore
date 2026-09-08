@@ -6,3 +6,6 @@ node_modules/
 wrangler.toml
 .wrangler/
 .dev.vars
+.vercel/
+screenshots/
+/tmp/
