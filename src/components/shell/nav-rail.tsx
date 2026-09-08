@@ -1,18 +1,22 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Box, FileCode, FolderGit2, MessageSquare, SquareTerminal, Upload } from "lucide-react";
+import { Box, FileCode, FolderGit2, Globe, MessageSquare, SquareTerminal, Upload } from "lucide-react";
 import { StudioMark } from "@/components/mark";
 import { cn } from "@/lib/utils";
+import { useWorkStore } from "@/lib/work/store";
 
 const ITEMS = [
-  { to: "/trails", label: "Trails", icon: MessageSquare, match: (p: string) => p === "/" || p.startsWith("/trails") },
+  { to: "/trails", label: "Chats", icon: MessageSquare, match: (p: string) => p === "/" || p.startsWith("/trails") },
   { to: "/projects", label: "Projects", icon: FolderGit2, match: (p: string) => p.startsWith("/projects") },
   { to: "/artifacts", label: "Artifacts", icon: Box, match: (p: string) => p.startsWith("/artifacts") },
-  { to: "/cli", label: "CLI", icon: SquareTerminal, match: (p: string) => p.startsWith("/cli"), emphasize: true },
   { to: "/files", label: "Files", icon: FileCode, match: (p: string) => p.startsWith("/files") },
+  { to: "/browse", label: "Browser", icon: Globe, match: (p: string) => p.startsWith("/browse") },
 ] as const;
 
 export function NavRail() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const terminalOpen = useWorkStore((s) => s.terminalOpen);
+  const toggleTerminal = useWorkStore((s) => s.toggleTerminal);
+  const cliActive = pathname.startsWith("/cli") || terminalOpen;
 
   return (
     <nav
@@ -41,13 +45,34 @@ export function NavRail() {
               "flex size-11 items-center justify-center rounded-xl text-muted-foreground transition-colors duration-150 md:size-9 md:rounded-lg",
               "hover:bg-muted hover:text-foreground",
               active && "bg-muted text-foreground",
-              "emphasize" in item && item.emphasize && !active && "text-stone",
             )}
           >
             <Icon className="size-5 md:size-4" />
           </Link>
         );
       })}
+
+      <button
+        type="button"
+        aria-label="CLI"
+        aria-pressed={cliActive}
+        title="CLI"
+        onClick={() => {
+          if (pathname.startsWith("/cli")) return;
+          toggleTerminal();
+        }}
+        onDoubleClick={() => {
+          window.dispatchEvent(new CustomEvent("agentsam:navigate", { detail: { to: "/cli" } }));
+        }}
+        className={cn(
+          "flex size-11 items-center justify-center rounded-xl text-muted-foreground transition-colors duration-150 md:size-9 md:rounded-lg",
+          "hover:bg-muted hover:text-foreground",
+          cliActive && "bg-muted text-foreground",
+          !cliActive && "text-stone",
+        )}
+      >
+        <SquareTerminal className="size-5 md:size-4" />
+      </button>
 
       <div className="mt-auto flex flex-col gap-1">
         <Link

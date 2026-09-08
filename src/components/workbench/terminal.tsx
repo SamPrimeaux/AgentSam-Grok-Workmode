@@ -17,9 +17,61 @@ async function postJson(url: string, body: unknown) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  const json = (await res.json().catch(() => ({}))) as { error?: string; url?: string; sha?: string; files?: number };
+  const json = (await res.json().catch(() => ({}))) as {
+    error?: string;
+    url?: string;
+    sha?: string;
+    files?: number;
+    line?: string;
+    status?: string;
+    id?: string;
+  };
   if (!res.ok) throw new Error(json.error || `Request failed ${res.status}`);
   return json;
+}
+
+type CfFeedEvent =
+  | { type: "log"; line: string }
+  | { type: "done"; ok: true; url: string; id: string; project: string; files: number }
+  | { type: "done"; ok: false; error: string };
+
+async function streamCloudflareDeploy(
+  body: unknown,
+  onLog: (line: string) => void,
+): Promise<Extract<CfFeedEvent, { type: "done" }>> {
+  const res = await fetch("/api/cloudflare", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...((body as object) ?? {}), stream: true, action: "deploy" }),
+  });
+  if (!res.ok || !res.body) {
+    const json = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(json.error || `Deploy failed ${res.status}`);
+  }
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let final: Extract<CfFeedEvent, { type: "done" }> | null = null;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      try {
+        const event = JSON.parse(trimmed) as CfFeedEvent;
+        if (event.type === "log") onLog(event.line);
+        else final = event;
+      } catch {
+        onLog(trimmed);
+      }
+    }
+  }
+  if (!final) throw new Error("Deploy stream ended without a result");
+  return final;
 }
 
 function writeLines(term: { writeln: (s: string) => void }, text: string) {
@@ -179,6 +231,21 @@ export function TerminalPane({ variant = "dock" }: { variant?: "dock" | "page" }
               return proj;
             }
           }
+          case "cloudflare-whoami": {
+            const token = readSecrets().cloudflareToken;
+            if (!token) {
+              term.writeln("No Cloudflare token. Open Ship or: export CLOUDFLARE_API_TOKEN=…");
+              store.setSettingsOpen(true);
+              return proj;
+            }
+            try {
+              const result = await postJson("/api/cloudflare", { action: "whoami", token });
+              term.writeln(result.line ?? `token ${result.status ?? "ok"}`);
+            } catch (err) {
+              term.writeln(err instanceof Error ? err.message : "whoami failed");
+            }
+            return proj;
+          }
           case "cloudflare-deploy": {
             const token = readSecrets().cloudflareToken;
             if (!token) {
@@ -189,31 +256,42 @@ export function TerminalPane({ variant = "dock" }: { variant?: "dock" | "page" }
             const accountId = proj.deploy.cloudflareAccountId.trim();
             if (!accountId) {
               term.writeln("Set Cloudflare account id in Ship.");
-              store.openSideTab("deploy", { ephemeral: false });
+              navigateApp("/ship");
               return proj;
             }
             const name = proj.deploy.cloudflareProject.trim() || slugify(proj.name);
             try {
-              const result = await postJson("/api/cloudflare", {
-                token,
-                accountId,
-                projectName: name,
-                files: proj.files.map((f) => ({ path: f.path, content: f.content })),
-              });
-              const url = result.url ?? `https://${name}.pages.dev`;
-              term.writeln(`deployed ${result.files ?? proj.files.length} files`);
-              term.writeln(url);
+              const final = await streamCloudflareDeploy(
+                {
+                  token,
+                  accountId,
+                  projectName: name,
+                  files: proj.files.map((f) => ({ path: f.path, content: f.content })),
+                },
+                (line) => term.writeln(line),
+              );
+              if (!final.ok) {
+                term.writeln(final.error);
+                return proj;
+              }
+              const url = final.url;
+              term.writeln(`live · ${final.files} files → ${url}`);
               toast("Deployed to Cloudflare Pages");
               return {
                 ...proj,
-                deploy: { ...proj.deploy, cloudflareProject: name, lastCloudflareUrl: url, lastCloudflareAt: Date.now() },
+                deploy: {
+                  ...proj.deploy,
+                  cloudflareProject: name,
+                  lastCloudflareUrl: url,
+                  lastCloudflareAt: Date.now(),
+                },
                 files: [
                   ...proj.files,
                   {
                     id: uid(),
                     path: `.agentsam/deploys/cloudflare-${Date.now()}.log`,
                     language: "plaintext",
-                    content: `Deployed ${result.files ?? proj.files.length} files\n${url}`,
+                    content: `Deployed ${final.files} files\n${url}\n${final.id}`,
                     updatedAt: Date.now(),
                     kind: "deploy",
                     origin: "deploy",

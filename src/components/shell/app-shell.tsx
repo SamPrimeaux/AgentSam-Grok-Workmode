@@ -6,6 +6,7 @@ import { CommandPalette } from "@/components/workbench/command-palette";
 import { SettingsDialog } from "@/components/workbench/settings-dialog";
 import { NavRail } from "@/components/shell/nav-rail";
 import { OfflineBanner } from "@/components/shell/offline-banner";
+import { CliDrawer } from "@/components/shell/cli-drawer";
 import { registerOfflineShell } from "@/lib/offline/register-sw";
 import { useOnline } from "@/hooks/use-online";
 import { cn } from "@/lib/utils";
@@ -50,7 +51,7 @@ export function AppShell() {
       }
       if (meta && event.key === "`") {
         event.preventDefault();
-        void navigate({ to: "/cli" });
+        useWorkStore.getState().toggleTerminal();
       }
       if (meta && event.key.toLowerCase() === "b") {
         event.preventDefault();
@@ -71,6 +72,7 @@ export function AppShell() {
             <Outlet />
           </main>
         </div>
+        <CliDrawer />
         <CommandPalette />
         <SettingsDialog />
         <Toaster

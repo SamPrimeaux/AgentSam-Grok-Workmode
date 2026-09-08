@@ -1,5 +1,5 @@
-import { useMemo, useState, type FormEvent } from "react";
-import { ArrowLeft, ArrowRight, Globe, RotateCw } from "lucide-react";
+import { useEffect, useState, type FormEvent } from "react";
+import { ArrowLeft, ArrowRight, ExternalLink, Globe, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useWorkStore } from "@/lib/work/store";
@@ -9,6 +9,7 @@ const BOOKMARKS = [
   { label: "MDN", url: "https://developer.mozilla.org/" },
   { label: "Wikipedia", url: "https://en.wikipedia.org/wiki/Main_Page" },
   { label: "npm", url: "https://www.npmjs.com/" },
+  { label: "Workers docs", url: "https://developers.cloudflare.com/workers/" },
   { label: "DuckDuckGo", url: "https://duckduckgo.com/" },
 ];
 
@@ -24,17 +25,23 @@ function resolveInput(raw: string) {
 
 export function BrowserStage({ tab }: { tab: SideTab }) {
   const setTabUrl = useWorkStore((s) => s.setTabUrl);
+  const navigateBrowser = useWorkStore((s) => s.navigateBrowser);
   const [draft, setDraft] = useState(tab.url);
+  const [reloadKey, setReloadKey] = useState(0);
   const src = tab.srcdoc ? undefined : tab.url;
-  const history = useMemo(() => (tab.url ? [tab.url] : []), [tab.url]);
-  const [index, setIndex] = useState(0);
+  const canBack = tab.historyIndex > 0;
+  const canForward = tab.historyIndex >= 0 && tab.historyIndex < tab.history.length - 1;
+
+  useEffect(() => {
+    setDraft(tab.url || (tab.srcdoc ? tab.title : ""));
+  }, [tab.url, tab.srcdoc, tab.title, tab.id]);
 
   function go(url: string) {
     const next = resolveInput(url);
     if (!next) return;
     setDraft(next);
     setTabUrl(tab.id, next);
-    setIndex(history.length);
+    setReloadKey((k) => k + 1);
   }
 
   function onSubmit(event: FormEvent) {
@@ -47,36 +54,34 @@ export function BrowserStage({ tab }: { tab: SideTab }) {
       <form onSubmit={onSubmit} className="flex items-center gap-1 border-b border-border px-2 py-2">
         <Button
           type="button"
-          size="icon-sm"
+          size="icon"
           variant="ghost"
+          className="size-11 shrink-0 md:size-8"
           aria-label="Back"
-          disabled={index <= 0}
-          onClick={() => {
-            const prev = history[index - 1];
-            if (prev) {
-              setIndex(index - 1);
-              setDraft(prev);
-              setTabUrl(tab.id, prev);
-            }
-          }}
+          disabled={!canBack}
+          onClick={() => navigateBrowser(tab.id, -1)}
         >
           <ArrowLeft className="size-4" />
         </Button>
         <Button
           type="button"
-          size="icon-sm"
+          size="icon"
           variant="ghost"
+          className="size-11 shrink-0 md:size-8"
           aria-label="Forward"
-          disabled
+          disabled={!canForward}
+          onClick={() => navigateBrowser(tab.id, 1)}
         >
           <ArrowRight className="size-4" />
         </Button>
         <Button
           type="button"
-          size="icon-sm"
+          size="icon"
           variant="ghost"
+          className="size-11 shrink-0 md:size-8"
           aria-label="Reload"
-          onClick={() => tab.url && setTabUrl(tab.id, tab.url)}
+          disabled={!tab.url && !tab.srcdoc}
+          onClick={() => setReloadKey((k) => k + 1)}
         >
           <RotateCw className="size-4" />
         </Button>
@@ -86,14 +91,27 @@ export function BrowserStage({ tab }: { tab: SideTab }) {
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Search or enter a URL"
-            className="h-9 pl-8"
+            className="h-11 pl-8 md:h-9"
             aria-label="Address"
           />
         </div>
+        {tab.url ? (
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            className="size-11 shrink-0 md:size-8"
+            aria-label="Open externally"
+            onClick={() => window.open(tab.url, "_blank", "noopener,noreferrer")}
+          >
+            <ExternalLink className="size-4" />
+          </Button>
+        ) : null}
       </form>
 
       {tab.srcdoc ? (
         <iframe
+          key={`doc-${reloadKey}`}
           title={tab.title}
           srcDoc={tab.srcdoc}
           sandbox="allow-scripts allow-forms"
@@ -101,18 +119,20 @@ export function BrowserStage({ tab }: { tab: SideTab }) {
         />
       ) : src ? (
         <iframe
-          key={src}
+          key={`${src}-${reloadKey}`}
           title={tab.title}
           src={src}
           className="h-full w-full bg-card"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+          referrerPolicy="no-referrer-when-downgrade"
         />
       ) : (
         <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
           <Globe className="mb-3 size-8 text-stone" />
-          <h2 className="text-base font-medium">Browser</h2>
+          <h2 className="text-base font-medium">Live browser</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground text-pretty">
-            Look something up without leaving the trail. Links in replies open here.
+            Look something up without leaving the lead chat. Preview HTML from Monaco here too.
+            Sites that block embedding can be opened externally.
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-2">
             {BOOKMARKS.map((item) => (

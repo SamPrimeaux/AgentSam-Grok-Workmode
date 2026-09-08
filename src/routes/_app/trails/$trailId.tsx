@@ -14,9 +14,9 @@ function TrailPage() {
   if (!trail) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
-        <p className="text-sm text-muted-foreground">That trail is not on this device.</p>
+        <p className="text-sm text-muted-foreground">That chat is not on this device.</p>
         <Button asChild variant="secondary">
-          <Link to="/trails">Back to trails</Link>
+          <Link to="/trails">Back to chats</Link>
         </Button>
       </div>
     );

@@ -1,4 +1,4 @@
-import { Box, FileCode, Globe, MessageSquare, Plus, Upload, X } from "lucide-react";
+import { Box, FileCode, Globe, Plus, Upload, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,7 +18,7 @@ import { useActiveSideTab, useWorkStore } from "@/lib/work/store";
 import { StudioMark } from "@/components/mark";
 
 function TabIcon({ kind }: { kind: string }) {
-  if (kind === "chat") return <MessageSquare className="size-3.5" />;
+  if (kind === "chat") return <Users className="size-3.5" />;
   if (kind === "browser") return <Globe className="size-3.5" />;
   if (kind === "artifacts") return <Box className="size-3.5" />;
   if (kind === "deploy") return <Upload className="size-3.5" />;
@@ -75,8 +75,8 @@ export function SideStage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem onSelect={() => openSideTab("chat")}>
-                <MessageSquare className="size-3.5" />
-                Helper chat
+                <Users className="size-3.5" />
+                Co-worker
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => openSideTab("browser", { ephemeral: false })}>
                 <Globe className="size-3.5" />
@@ -110,23 +110,23 @@ export function SideStage() {
       </div>
 
       <div className="min-h-0 flex-1">
-        {tab?.kind === "chat" ? <SideChat tabId={tab.id} /> : null}
+        {tab?.kind === "chat" ? <CoworkerChat tabId={tab.id} /> : null}
         {tab?.kind === "browser" ? <BrowserStage tab={tab} /> : null}
         {tab?.kind === "files" ? <FilesStage tab={tab} /> : null}
         {tab?.kind === "artifacts" ? <ArtifactsStage /> : null}
         {tab?.kind === "deploy" ? <DeployStage /> : null}
         {!tab ? (
           <div className="flex h-full flex-col items-center justify-center px-6 text-center">
-            <p className="text-sm text-muted-foreground">The side stage is empty.</p>
+            <p className="text-sm text-muted-foreground">Open a co-worker, browser, or files pane.</p>
           </div>
         ) : null}
       </div>
 
       <Dialog open={Boolean(confirmId)} onOpenChange={(open) => !open && setConfirmDiscard(null)}>
         <DialogContent>
-          <DialogTitle>Discard this helper chat?</DialogTitle>
+          <DialogTitle>Close this co-worker?</DialogTitle>
           <DialogDescription>
-            Side chats are ephemeral. Keep it as a stored trail, or discard it.
+            Save their thread as its own lead chat, or discard the side conversation.
           </DialogDescription>
           <div className="mt-4 flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => setConfirmDiscard(null)}>
@@ -140,7 +140,7 @@ export function SideStage() {
                 setConfirmDiscard(null);
               }}
             >
-              Keep trail
+              Save as chat
             </Button>
             <Button
               type="button"
@@ -158,7 +158,7 @@ export function SideStage() {
   );
 }
 
-function SideChat({ tabId }: { tabId: string }) {
+function CoworkerChat({ tabId }: { tabId: string }) {
   const tab = useWorkStore((s) => s.sideTabs.find((t) => t.id === tabId));
   const keepSideChat = useWorkStore((s) => s.keepSideChat);
   const trails = useWorkStore((s) => s.trails);
@@ -171,40 +171,39 @@ function SideChat({ tabId }: { tabId: string }) {
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex items-center gap-2 border-b border-border px-3 py-2">
         <p className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
-          {tab.ephemeral
-            ? "Ephemeral helper · disappears unless you keep it"
-            : `Kept as ${tab.title}`}
+          {parent
+            ? `Co-worker helping lead chat “${parent.title}” · reports back when done`
+            : "Co-worker · reports into the lead chat"}
         </p>
-        {tab.ephemeral ? (
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            className="h-7 rounded-full"
-            onClick={() => keepSideChat(tab.id)}
-            disabled={tab.messages.length === 0}
-          >
-            Keep trail
-          </Button>
-        ) : null}
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="h-7 rounded-full"
+          onClick={() => keepSideChat(tab.id)}
+          disabled={tab.messages.length === 0}
+        >
+          Save as chat
+        </Button>
       </div>
       {parent ? (
         <div className="mx-3 mt-3 rounded-xl bg-muted px-3 py-2 text-xs text-muted-foreground">
-          Continuing from <span className="text-foreground">{parent.title}</span>
+          Lead context: <span className="text-foreground">{parent.title}</span>
         </div>
       ) : null}
       {empty ? (
         <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
           <StudioMark className="mb-3 size-10" />
-          <h2 className="text-base font-medium">Side chat</h2>
+          <h2 className="text-base font-medium">Co-worker</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground text-pretty">
-            Helper chats are temporary and disappear when you close the tab. Keep one to save it as a stored trail.
+            Spin up a specialist beside the lead agent — research, draft files, review — without derailing the main
+            chat. Brief handoffs land back in the lead thread.
           </p>
         </div>
       ) : (
         <MessageList messages={tab.messages} trailId={parent?.id} streaming={streaming} />
       )}
-      <Composer targetId={tab.id} targetKind="side" placeholder="Ask a helper" />
+      <Composer targetId={tab.id} targetKind="side" placeholder="Brief the co-worker" />
     </div>
   );
 }

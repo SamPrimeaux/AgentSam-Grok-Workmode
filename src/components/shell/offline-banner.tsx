@@ -23,7 +23,7 @@ export function OfflineBanner() {
     >
       <WifiOff className="size-3.5 shrink-0 text-stone" aria-hidden />
       <p className="min-w-0 flex-1 leading-snug">
-        Offline — trails stay on this device. CLI still works.
+        Offline — chats stay on this device. CLI still works.
         {queued > 0 ? ` ${queued} message${queued === 1 ? "" : "s"} queued.` : null}
       </p>
       <Link

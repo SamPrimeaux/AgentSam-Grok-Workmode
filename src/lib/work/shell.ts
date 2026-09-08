@@ -411,16 +411,18 @@ function ghCommand(project: Project, args: string[]): ShellResult {
 
 function wranglerCommand(project: Project, args: string[]): ShellResult {
   const joined = args.join(" ");
-  if (args[0] === "whoami") return ok(project, "Cloudflare token is read from Ship / CLOUDFLARE_API_TOKEN");
+  if (args[0] === "whoami") {
+    return ok(project, "verifying Cloudflare token…", { type: "cloudflare-whoami" });
+  }
   if (args[0] === "pages" && args[1] === "deploy") {
-    return ok(project, "uploading Pages project…", { type: "cloudflare-deploy" });
+    return ok(project, "wrangler pages deploy · live feed", { type: "cloudflare-deploy" });
   }
   if (args[0] === "pages" && args[1] === "project" && args[2] === "create") {
     const name = args[3] || slugify(project.name);
     return ok({ ...project, deploy: { ...project.deploy, cloudflareProject: name } }, `project name set to ${name}`);
   }
   if (args[0] === "deploy" || joined.includes("pages deploy")) {
-    return ok(project, "uploading Pages project…", { type: "cloudflare-deploy" });
+    return ok(project, "wrangler pages deploy · live feed", { type: "cloudflare-deploy" });
   }
   return fail(project, "wrangler: try  wrangler pages deploy  ·  wrangler whoami");
 }

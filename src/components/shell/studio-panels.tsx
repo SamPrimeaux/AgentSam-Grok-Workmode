@@ -77,7 +77,7 @@ function TrailRow({
             size="icon"
             variant="ghost"
             className="mr-1 size-11 opacity-100 md:size-8 md:opacity-0 md:group-hover:opacity-100 md:data-[state=open]:opacity-100"
-            aria-label={`Trail actions for ${trail.title}`}
+            aria-label={`Chat actions for ${trail.title}`}
           >
             <MoreHorizontal className="size-4" />
           </Button>
@@ -159,14 +159,14 @@ export function TrailsPanel({
       <div className="flex items-center gap-2 px-3 pt-4 pb-3">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium tracking-tight">{project.name}</p>
-          <p className="text-[11px] text-muted-foreground">Work</p>
+          <p className="text-[11px] text-muted-foreground">Chats</p>
         </div>
         <Button
           type="button"
           size="icon"
           variant="ghost"
           className="size-11 text-foreground md:size-8"
-          aria-label="New trail"
+          aria-label="New chat"
           onClick={() => {
             const id = startTrail();
             void navigate({ to: "/trails/$trailId", params: { trailId: id } });
@@ -182,7 +182,7 @@ export function TrailsPanel({
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search trails"
+            placeholder="Search chats"
             className="h-full w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
         </label>
@@ -194,7 +194,7 @@ export function TrailsPanel({
         <Section label="Yesterday" trails={groups.yesterday} activeId={activeId} onRename={(t) => { setEditing(t); setTitle(t.title); }} />
         <Section label="Earlier" trails={groups.earlier} activeId={activeId} onRename={(t) => { setEditing(t); setTitle(t.title); }} />
         {!projectTrails.length ? (
-          <p className="px-2.5 py-6 text-sm text-muted-foreground">No trails yet. Start one and it stays on this device.</p>
+          <p className="px-2.5 py-6 text-sm text-muted-foreground">No chats yet. Start one — it stays with the project on this device.</p>
         ) : null}
       </div>
 
@@ -207,8 +207,8 @@ export function TrailsPanel({
 
       <Dialog open={Boolean(editing)} onOpenChange={(open) => !open && setEditing(null)}>
         <DialogContent>
-          <DialogTitle>Rename trail</DialogTitle>
-          <DialogDescription>The name appears in the stored trail list.</DialogDescription>
+          <DialogTitle>Rename chat</DialogTitle>
+          <DialogDescription>The name appears in your chat list.</DialogDescription>
           <form
             className="mt-4 flex flex-col gap-3"
             onSubmit={(e) => {
@@ -285,7 +285,7 @@ export function ProjectsPanel() {
             >
               <span className="truncate text-sm">{item.name}</span>
               <span className="text-[11px] text-muted-foreground">
-                {item.files.length} files · {trails.filter((t) => t.projectId === item.id).length} trails
+                {item.files.length} files · {trails.filter((t) => t.projectId === item.id).length} chats
               </span>
             </button>
             <DropdownMenu>

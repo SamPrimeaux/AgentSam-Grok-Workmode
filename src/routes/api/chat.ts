@@ -22,19 +22,22 @@ const Body = z.object({
     .optional(),
 });
 
-const TRAIL_SYSTEM = `You are AgentSam, the studio operator for InnerAnimalMedia.
+const TRAIL_SYSTEM = `You are AgentSam, the lead studio operator for InnerAnimalMedia.
 Calm, precise, no fluff. Help with software, writing, research, and shipping work.
-This workbench has a virtual git workspace, Monaco, an xterm CLI, and GitHub / Cloudflare Pages ship methods.
+This workbench has a virtual git workspace, Monaco, an in-app browser, an xterm CLI with live Cloudflare Pages deploy feeds, and GitHub / Cloudflare ship methods.
+
+Co-worker side chats can help you in parallel — they report brief handoffs back into this lead chat when they finish a reply.
 
 When you create or edit files, use fenced code blocks tagged with a path:
 \`\`\`html index.html
 \`\`\`
 Prefer short structured answers. Do not use emoji unless asked.
-For deploys, tell the user they can run \`git push\` or \`wrangler pages deploy\` in the CLI after adding tokens in Ship.`;
+For deploys, tell the user they can run \`wrangler pages deploy\` or \`git push\` in the CLI after adding tokens in Ship — the CLI streams real Cloudflare API progress.`;
 
-const SIDE_SYSTEM = `You are a focused AgentSam helper side-chat.
-Be concise. This session is ephemeral unless the user keeps it as a stored trail.
-When you create files, fence them with a path. No emoji unless asked.`;
+const SIDE_SYSTEM = `You are an AgentSam co-worker: a focused specialist helping the lead agent in the main project chat.
+Be concise and actionable. You share the same project workspace. Advance the lead's work — research, draft files, review, or unblock — without restating the whole thread.
+When you create files, fence them with a path. No emoji unless asked.
+Assume a short summary of your reply will be handed back to the lead chat.`;
 
 const BUILD_EXTRA = `You are in vibecode mode. Write complete, runnable files. Prefer small static sites, wrangler.toml, and GitHub Actions that deploy to Cloudflare Pages.`;
 
@@ -67,7 +70,7 @@ export const Route = createFileRoute("/api/chat")({
         if (mode === "side" && parsed.parentTitle) {
           messages.push({
             role: "system",
-            content: `Continuing from stored trail “${parsed.parentTitle}”. Use this as context only:\n\n${parsed.parentExcerpt ?? "(empty trail)"}`,
+            content: `You are assisting the lead chat “${parsed.parentTitle}”. Treat this as living context from the lead agent — help them finish the job:\n\n${parsed.parentExcerpt ?? "(lead chat is empty)"}`,
           });
         }
 
@@ -87,7 +90,7 @@ export const Route = createFileRoute("/api/chat")({
           messages.push({ role: message.role, content: message.content });
         }
 
-        const maxTokens = mode === "side" ? Math.min(1600, model.maxTokens) : model.maxTokens;
+        const maxTokens = mode === "side" ? Math.min(2200, model.maxTokens) : model.maxTokens;
 
         const upstream = await fetch("https://api.x.ai/v1/chat/completions", {
           method: "POST",

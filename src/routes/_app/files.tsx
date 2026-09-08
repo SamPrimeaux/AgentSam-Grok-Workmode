@@ -35,6 +35,9 @@ function FilesPage() {
       url: "",
       srcdoc: null,
       fileId: project.files[0]?.id ?? null,
+      history: [],
+      historyIndex: -1,
+      reportToLead: false,
     };
   }, [sideTabs, project.files]);
 

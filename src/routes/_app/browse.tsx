@@ -32,6 +32,9 @@ function BrowsePage() {
       url: "",
       srcdoc: null,
       fileId: null,
+      history: [],
+      historyIndex: -1,
+      reportToLead: false,
     };
   }, [sideTabs]);
 

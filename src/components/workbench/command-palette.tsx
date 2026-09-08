@@ -34,7 +34,7 @@ export function CommandPalette() {
       overlayClassName="fixed inset-0 z-50 bg-ink/60"
       contentClassName="fixed top-[18vh] left-1/2 z-50 w-[min(36rem,calc(100vw-1.5rem))] -translate-x-1/2"
     >
-      <Command.Input placeholder="Search trails, projects, or run a command" />
+      <Command.Input placeholder="Search chats, projects, or run a command" />
       <Command.List>
         <Command.Empty>Nothing matches.</Command.Empty>
         <Command.Group heading="Actions">
@@ -46,7 +46,7 @@ export function CommandPalette() {
             }}
           >
             <Plus className="size-4" />
-            New trail
+            New chat
           </Command.Item>
           <Command.Item
             onSelect={() => {
@@ -65,16 +65,16 @@ export function CommandPalette() {
             }}
           >
             <MessageSquare className="size-4" />
-            New side chat
+            New co-worker
           </Command.Item>
           <Command.Item
             onSelect={() => {
-              void navigate({ to: "/cli" });
+              useWorkStore.getState().toggleTerminal();
               setOpen(false);
             }}
           >
             <SquareTerminal className="size-4" />
-            Open CLI
+            Toggle CLI drawer
           </Command.Item>
           <Command.Item
             onSelect={() => {
@@ -119,7 +119,7 @@ export function CommandPalette() {
             }}
           >
             <Search className="size-4" />
-            Trails
+            Chats
           </Command.Item>
         </Command.Group>
         <Command.Group heading="Projects">
@@ -137,7 +137,7 @@ export function CommandPalette() {
             </Command.Item>
           ))}
         </Command.Group>
-        <Command.Group heading="Trails">
+        <Command.Group heading="Chats">
           {trails.map((trail) => (
             <Command.Item
               key={trail.id}

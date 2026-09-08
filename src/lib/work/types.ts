@@ -91,6 +91,11 @@ export type SideTab = {
   url: string;
   srcdoc: string | null;
   fileId: string | null;
+  /** In-app browser history stack (URLs only; srcdoc previews skip history). */
+  history: string[];
+  historyIndex: number;
+  /** Co-worker chats report a brief into the lead chat when a reply finishes. */
+  reportToLead: boolean;
 };
 
 export type ChatTarget = { kind: "trail"; id: string } | { kind: "side"; id: string };
@@ -113,5 +118,6 @@ export type ShellEffect =
   | { type: "vibe"; prompt: string }
   | { type: "github-push"; message: string }
   | { type: "cloudflare-deploy" }
+  | { type: "cloudflare-whoami" }
   | { type: "download-zip" }
   | { type: "set-secret"; key: "githubToken" | "cloudflareToken"; value: string };

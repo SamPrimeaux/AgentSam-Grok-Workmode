@@ -62,7 +62,7 @@ function CodeBlock({
                   const cmd = line.replace(/^\s*\$\s?/, "").trim();
                   if (cmd && !cmd.startsWith("#")) enqueueCommand(cmd);
                 }
-                void navigate({ to: "/cli" });
+                useWorkStore.getState().setTerminalOpen(true);
               }}
             >
               <Play className="size-3.5" />

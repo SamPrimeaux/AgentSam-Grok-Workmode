@@ -138,7 +138,7 @@ function EmptyTrail({ onPrompt }: { onPrompt: (text: string) => void }) {
       <StudioMark className="mb-4 size-12" />
       <h2 className="text-xl font-medium tracking-tight text-balance">What is on the bench?</h2>
       <p className="mt-2 max-w-sm text-sm text-muted-foreground text-pretty">
-        This trail is stored on the project. Side chats stay ephemeral until you keep them.
+        This is the lead chat for the project. Open a co-worker beside it when you want focused help.
       </p>
       <div className="mt-6 flex max-w-lg flex-wrap justify-center gap-2">
         {STARTERS.map((prompt) => (

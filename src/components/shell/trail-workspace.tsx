@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Columns2, Share, SquareTerminal } from "lucide-react";
+import { ArrowLeft, Columns2, Share, SquareTerminal, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -14,10 +14,12 @@ import type { Trail } from "@/lib/work/types";
 export function TrailWorkspace({ trail }: { trail: Trail }) {
   const sideOpen = useWorkStore((s) => s.sideOpen);
   const sideTabs = useWorkStore((s) => s.sideTabs);
+  const terminalOpen = useWorkStore((s) => s.terminalOpen);
   const setSideOpen = useWorkStore((s) => s.setSideOpen);
   const openSideTab = useWorkStore((s) => s.openSideTab);
   const renameTrail = useWorkStore((s) => s.renameTrail);
   const setActiveTrail = useWorkStore((s) => s.setActiveTrail);
+  const toggleTerminal = useWorkStore((s) => s.toggleTerminal);
 
   useEffect(() => {
     setActiveTrail(trail.id);
@@ -41,9 +43,9 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
     );
     try {
       await navigator.clipboard.writeText(markdown);
-      toast("Trail copied");
+      toast("Chat copied");
     } catch {
-      toast("Could not copy the trail");
+      toast("Could not copy the chat");
     }
   }
 
@@ -56,7 +58,7 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header className="flex min-h-12 shrink-0 items-center gap-1 border-b border-border px-2">
           <Button asChild size="icon" variant="ghost" className="size-11 text-foreground md:hidden md:size-8">
-            <Link to="/trails" aria-label="Back to trails">
+            <Link to="/trails" aria-label="Back to chats">
               <ArrowLeft className="size-4" />
             </Link>
           </Button>
@@ -64,7 +66,7 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
             value={trail.title}
             onChange={(e) => renameTrail(trail.id, e.target.value)}
             className="min-w-0 flex-1 bg-transparent px-2 text-sm font-medium tracking-tight outline-none"
-            aria-label="Trail title"
+            aria-label="Chat title"
           />
           <Tooltip>
             <TooltipTrigger asChild>
@@ -73,23 +75,43 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
                 size="icon"
                 variant="ghost"
                 className="size-11 md:size-8"
-                aria-label="Copy trail"
+                aria-label="Copy chat"
                 onClick={() => void share()}
               >
                 <Share className="size-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Copy trail</TooltipContent>
+            <TooltipContent>Copy chat</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button asChild size="icon" variant="ghost" className="size-11 md:size-8">
-                <Link to="/cli" aria-label="Open CLI">
-                  <SquareTerminal className="size-4" />
-                </Link>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                className="size-11 md:size-8"
+                aria-label="Open co-worker"
+                onClick={() => openSideTab("chat")}
+              >
+                <Users className="size-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>CLI</TooltipContent>
+            <TooltipContent>Co-worker</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                size="icon"
+                variant={terminalOpen ? "secondary" : "ghost"}
+                className="size-11 md:size-8"
+                aria-label="Toggle CLI drawer"
+                onClick={toggleTerminal}
+              >
+                <SquareTerminal className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>CLI drawer</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>

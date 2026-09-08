@@ -23,7 +23,7 @@ const WELCOME_MESSAGE: ChatMessage = {
   id: "welcome-msg",
   role: "assistant",
   content:
-    "You are in AgentSam Work.\n\nThis pane is a **stored trail**. Use the rail for Projects, Artifacts, Files, Ship, and a full-page **CLI** built for phones — it keeps working offline. Trails and projects stay on this device.\n\nWhat are you working on?",
+    "You are in AgentSam Work — a calm vibecode bench.\n\nThis is the **lead chat** for the project. Open **co-worker** side chats when you want focused help without derailing the main thread. Monaco, the in-app browser, and the CLI (bottom drawer on phones) stay with the project on this device.\n\nWhat are you working on?",
   createdAt: 1_746_000_000_000,
 };
 
@@ -49,7 +49,7 @@ function newTrail(partial?: Partial<Trail>): Trail {
   const now = Date.now();
   return {
     id: uid(),
-    title: "New trail",
+    title: "New chat",
     createdAt: now,
     updatedAt: now,
     pinned: false,
@@ -61,7 +61,7 @@ function newTrail(partial?: Partial<Trail>): Trail {
 }
 
 const SIDE_TITLES: Record<SideKind, string> = {
-  chat: "Side chat",
+  chat: "Co-worker",
   browser: "Browser",
   files: "Files",
   terminal: "CLI",
@@ -74,23 +74,26 @@ function newSideTab(kind: SideKind, extra?: Partial<SideTab>): SideTab {
     id: uid(),
     kind,
     title: SIDE_TITLES[kind],
-    ephemeral: kind === "chat",
+    ephemeral: false,
     messages: [],
     parentTrailId: null,
     keptTrailId: null,
     url: "",
     srcdoc: null,
     fileId: null,
+    history: [],
+    historyIndex: -1,
+    reportToLead: kind === "chat",
     ...extra,
   };
 }
 
 function excerptOf(trail: Trail | undefined) {
   if (!trail) return null;
-  const slice = trail.messages.filter((m) => m.role !== "system").slice(-6);
+  const slice = trail.messages.filter((m) => m.role !== "system").slice(-8);
   if (!slice.length) return null;
   return slice
-    .map((m) => `${m.role === "user" ? "User" : "AgentSam"}: ${m.content.slice(0, 600)}`)
+    .map((m) => `${m.role === "user" ? "Lead user" : "Lead agent"}: ${m.content.slice(0, 800)}`)
     .join("\n\n");
 }
 
@@ -115,6 +118,8 @@ type WorkState = {
   mobileNavOpen: boolean;
   sideOpen: boolean;
   terminalOpen: boolean;
+  /** CLI drawer height as a fraction of the viewport (0.22–0.88). */
+  terminalHeight: number;
   settingsOpen: boolean;
   navView: NavView;
   modelId: string;
@@ -135,8 +140,10 @@ type WorkState = {
   setMobileNavOpen: (open: boolean) => void;
   setSideOpen: (open: boolean) => void;
   setTerminalOpen: (open: boolean) => void;
+  setTerminalHeight: (height: number) => void;
   setSettingsOpen: (open: boolean) => void;
   toggleTerminal: () => void;
+  reportCoworkerToLead: (sideTabId: string, summary: string) => void;
   setActiveTrail: (id: string) => void;
   startTrail: () => string;
   flushOfflineQueue: () => Promise<void>;
@@ -156,6 +163,8 @@ type WorkState = {
   closeSideTab: (id: string, force?: boolean) => void;
   setActiveSideTab: (id: string) => void;
   setTabUrl: (id: string, url: string) => void;
+  navigateBrowser: (id: string, delta: number) => void;
+  setBrowserSrcdoc: (id: string, srcdoc: string, title?: string) => void;
   setConfirmDiscard: (id: string | null) => void;
   keepSideChat: (id: string) => string | null;
   enqueueCommand: (cmd: string) => void;
@@ -174,6 +183,7 @@ function ensureShape(raw: Partial<WorkState> | undefined): Pick<
   | "sidebarOpen"
   | "sideOpen"
   | "terminalOpen"
+  | "terminalHeight"
   | "navView"
   | "modelId"
   | "sideTabs"
@@ -218,9 +228,23 @@ function ensureShape(raw: Partial<WorkState> | undefined): Pick<
     sidebarOpen: raw?.sidebarOpen ?? true,
     sideOpen: raw?.sideOpen ?? false,
     terminalOpen: raw?.terminalOpen ?? false,
+    terminalHeight:
+      typeof raw?.terminalHeight === "number"
+        ? Math.min(0.88, Math.max(0.22, raw.terminalHeight))
+        : 0.38,
     navView: raw?.navView ?? "trails",
     modelId: raw?.modelId || DEFAULT_MODEL_ID,
-    sideTabs: raw?.sideTabs ?? [],
+    sideTabs: (raw?.sideTabs ?? []).map((t) => {
+      const tab = t as SideTab;
+      return {
+        ...tab,
+        ephemeral: tab.ephemeral ?? false,
+        history: Array.isArray(tab.history) ? tab.history : [],
+        historyIndex: typeof tab.historyIndex === "number" ? tab.historyIndex : -1,
+        reportToLead:
+          typeof tab.reportToLead === "boolean" ? tab.reportToLead : tab.kind === "chat",
+      };
+    }),
     activeSideTabId: raw?.activeSideTabId ?? null,
   };
 }
@@ -237,6 +261,7 @@ export const useWorkStore = create<WorkState>()(
       confirmDiscardId: null,
       pendingCommands: [],
       offlineQueue: [],
+      terminalHeight: 0.38,
       setHydrated: (value) => set({ hydrated: value }),
       setSearch: (search) => set({ search }),
       setDraft: (id, value) => set((s) => ({ drafts: { ...s.drafts, [id]: value } })),
@@ -247,12 +272,32 @@ export const useWorkStore = create<WorkState>()(
       setMobileNavOpen: (mobileNavOpen) => set({ mobileNavOpen }),
       setSideOpen: (sideOpen) => set({ sideOpen }),
       setTerminalOpen: (terminalOpen) => set({ terminalOpen }),
+      setTerminalHeight: (terminalHeight) =>
+        set({ terminalHeight: Math.min(0.88, Math.max(0.22, terminalHeight)) }),
       setSettingsOpen: (settingsOpen) => set({ settingsOpen }),
       toggleTerminal: () => set((s) => ({ terminalOpen: !s.terminalOpen })),
+      reportCoworkerToLead: (sideTabId, summary) => {
+        const tab = get().sideTabs.find((t) => t.id === sideTabId);
+        const leadId = tab?.parentTrailId ?? get().activeTrailId;
+        if (!leadId || !summary.trim()) return;
+        const note: ChatMessage = {
+          id: uid(),
+          role: "assistant",
+          content: `**Co-worker · ${tab?.title ?? "side"}**\n\n${summary.trim().slice(0, 4000)}`,
+          createdAt: Date.now(),
+        };
+        set((s) => ({
+          trails: s.trails.map((t) =>
+            t.id === leadId
+              ? { ...t, updatedAt: Date.now(), messages: [...t.messages, note] }
+              : t,
+          ),
+        }));
+      },
       setActiveTrail: (id) => set({ activeTrailId: id, navView: "trails" }),
       startTrail: () => {
         const current = get().trails.find((t) => t.id === get().activeTrailId);
-        if (current && current.messages.length === 0 && current.title === "New trail") {
+        if (current && current.messages.length === 0 && (current.title === "New trail" || current.title === "New chat")) {
           return current.id;
         }
         const trail = newTrail({ projectId: get().activeProjectId });
@@ -521,7 +566,7 @@ export const useWorkStore = create<WorkState>()(
         });
         if (kind === "chat" && tab.parentTrailId) {
           const parent = get().trails.find((t) => t.id === tab.parentTrailId);
-          if (parent) tab.title = `From ${parent.title}`;
+          if (parent) tab.title = `Co-worker · ${parent.title}`;
         }
         set((s) => ({
           sideOpen: true,
@@ -558,8 +603,42 @@ export const useWorkStore = create<WorkState>()(
       setActiveSideTab: (id) => set({ activeSideTabId: id, sideOpen: true }),
       setTabUrl: (id, url) =>
         set((s) => ({
+          sideTabs: s.sideTabs.map((t) => {
+            if (t.id !== id) return t;
+            const history = t.history.slice(0, Math.max(0, t.historyIndex) + 1);
+            if (history[history.length - 1] !== url) history.push(url);
+            return {
+              ...t,
+              url,
+              srcdoc: null,
+              title: hostname(url) || t.title,
+              history,
+              historyIndex: history.length - 1,
+            };
+          }),
+        })),
+      navigateBrowser: (id, delta) =>
+        set((s) => ({
+          sideTabs: s.sideTabs.map((t) => {
+            if (t.id !== id) return t;
+            const next = t.historyIndex + delta;
+            if (next < 0 || next >= t.history.length) return t;
+            const url = t.history[next]!;
+            return {
+              ...t,
+              historyIndex: next,
+              url,
+              srcdoc: null,
+              title: hostname(url) || t.title,
+            };
+          }),
+        })),
+      setBrowserSrcdoc: (id, srcdoc, title) =>
+        set((s) => ({
           sideTabs: s.sideTabs.map((t) =>
-            t.id === id ? { ...t, url, srcdoc: null, title: hostname(url) || t.title } : t,
+            t.id === id
+              ? { ...t, srcdoc, url: "", title: title ?? t.title }
+              : t,
           ),
         })),
       setConfirmDiscard: (confirmDiscardId) => set({ confirmDiscardId }),
@@ -590,6 +669,7 @@ export const useWorkStore = create<WorkState>()(
       enqueueCommand: (cmd) =>
         set((s) => ({
           pendingCommands: [...s.pendingCommands, cmd],
+          terminalOpen: true,
         })),
       consumeCommands: () => {
         const cmds = get().pendingCommands;
@@ -776,6 +856,16 @@ export const useWorkStore = create<WorkState>()(
             },
           });
           write(assembled, true);
+          if (targetKind === "side") {
+            const tab = get().sideTabs.find((t) => t.id === targetId);
+            if (tab?.reportToLead && assembled.trim()) {
+              const brief =
+                assembled.trim().length > 1200
+                  ? `${assembled.trim().slice(0, 1200).trim()}…`
+                  : assembled.trim();
+              get().reportCoworkerToLead(targetId, brief);
+            }
+          }
         } catch (err) {
           if ((err as Error).name === "AbortError") return;
           const message = err instanceof Error ? err.message : "The studio model could not reply.";
@@ -809,6 +899,7 @@ export const useWorkStore = create<WorkState>()(
         sidebarOpen: s.sidebarOpen,
         sideOpen: s.sideOpen,
         terminalOpen: s.terminalOpen,
+        terminalHeight: s.terminalHeight,
         navView: s.navView,
         modelId: s.modelId,
         sideTabs: s.sideTabs,
