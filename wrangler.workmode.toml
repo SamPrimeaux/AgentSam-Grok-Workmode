@@ -1,8 +1,6 @@
-# Example / local override. Live SSOT config is wrangler.workmode.toml
-# (vault Worker entry: worker/index.js).
-#
-#   cp wrangler.toml.example wrangler.toml
-#   npx wrangler deploy -c wrangler.workmode.toml
+# Live deploy config for agentsam-workmode vault Worker.
+# Deploy (from IAM desk with env wrapper):
+#   ./scripts/with-cloudflare-env.sh npx wrangler deploy -c wrangler.workmode.toml
 
 name = "agentsam-workmode"
 main = "worker/index.js"
