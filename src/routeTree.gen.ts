@@ -9,15 +9,58 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppArtifactsRouteImport } from './routes/_app/artifacts'
+import { Route as AppBrowseRouteImport } from './routes/_app/browse'
+import { Route as AppCliRouteImport } from './routes/_app/cli'
+import { Route as AppFilesRouteImport } from './routes/_app/files'
+import { Route as AppProjectsRouteImport } from './routes/_app/projects'
+import { Route as AppShipRouteImport } from './routes/_app/ship'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiCloudflareRouteImport } from './routes/api/cloudflare'
 import { Route as ApiGithubRouteImport } from './routes/api/github'
+import { Route as AppTrailsIndexRouteImport } from './routes/_app/trails/index'
+import { Route as AppTrailsTrailIdRouteImport } from './routes/_app/trails/$trailId'
 
-const IndexRoute = IndexRouteImport.update({
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
+} as any)
+const AppArtifactsRoute = AppArtifactsRouteImport.update({
+  id: '/artifacts',
+  path: '/artifacts',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBrowseRoute = AppBrowseRouteImport.update({
+  id: '/browse',
+  path: '/browse',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCliRoute = AppCliRouteImport.update({
+  id: '/cli',
+  path: '/cli',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFilesRoute = AppFilesRouteImport.update({
+  id: '/files',
+  path: '/files',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProjectsRoute = AppProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppShipRoute = AppShipRouteImport.update({
+  id: '/ship',
+  path: '/ship',
+  getParentRoute: () => AppRoute,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
@@ -34,36 +77,109 @@ const ApiGithubRoute = ApiGithubRouteImport.update({
   path: '/api/github',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppTrailsIndexRoute = AppTrailsIndexRouteImport.update({
+  id: '/trails/',
+  path: '/trails/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTrailsTrailIdRoute = AppTrailsTrailIdRouteImport.update({
+  id: '/trails/$trailId',
+  path: '/trails/$trailId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AppIndexRoute
+  '/artifacts': typeof AppArtifactsRoute
+  '/browse': typeof AppBrowseRoute
+  '/cli': typeof AppCliRoute
+  '/files': typeof AppFilesRoute
+  '/projects': typeof AppProjectsRoute
+  '/ship': typeof AppShipRoute
   '/api/chat': typeof ApiChatRoute
   '/api/cloudflare': typeof ApiCloudflareRoute
   '/api/github': typeof ApiGithubRoute
+  '/trails/$trailId': typeof AppTrailsTrailIdRoute
+  '/trails/': typeof AppTrailsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
+  '/artifacts': typeof AppArtifactsRoute
+  '/browse': typeof AppBrowseRoute
+  '/cli': typeof AppCliRoute
+  '/files': typeof AppFilesRoute
+  '/projects': typeof AppProjectsRoute
+  '/ship': typeof AppShipRoute
   '/api/chat': typeof ApiChatRoute
   '/api/cloudflare': typeof ApiCloudflareRoute
   '/api/github': typeof ApiGithubRoute
+  '/': typeof AppIndexRoute
+  '/trails/$trailId': typeof AppTrailsTrailIdRoute
+  '/trails': typeof AppTrailsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/_app/artifacts': typeof AppArtifactsRoute
+  '/_app/browse': typeof AppBrowseRoute
+  '/_app/cli': typeof AppCliRoute
+  '/_app/files': typeof AppFilesRoute
+  '/_app/projects': typeof AppProjectsRoute
+  '/_app/ship': typeof AppShipRoute
   '/api/chat': typeof ApiChatRoute
   '/api/cloudflare': typeof ApiCloudflareRoute
   '/api/github': typeof ApiGithubRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/trails/$trailId': typeof AppTrailsTrailIdRoute
+  '/_app/trails/': typeof AppTrailsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/chat' | '/api/cloudflare' | '/api/github'
+  fullPaths:
+    | '/'
+    | '/artifacts'
+    | '/browse'
+    | '/cli'
+    | '/files'
+    | '/projects'
+    | '/ship'
+    | '/api/chat'
+    | '/api/cloudflare'
+    | '/api/github'
+    | '/trails/$trailId'
+    | '/trails/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/chat' | '/api/cloudflare' | '/api/github'
-  id: '__root__' | '/' | '/api/chat' | '/api/cloudflare' | '/api/github'
+  to:
+    | '/artifacts'
+    | '/browse'
+    | '/cli'
+    | '/files'
+    | '/projects'
+    | '/ship'
+    | '/api/chat'
+    | '/api/cloudflare'
+    | '/api/github'
+    | '/'
+    | '/trails/$trailId'
+    | '/trails'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/_app/artifacts'
+    | '/_app/browse'
+    | '/_app/cli'
+    | '/_app/files'
+    | '/_app/projects'
+    | '/_app/ship'
+    | '/api/chat'
+    | '/api/cloudflare'
+    | '/api/github'
+    | '/_app/'
+    | '/_app/trails/$trailId'
+    | '/_app/trails/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
   ApiCloudflareRoute: typeof ApiCloudflareRoute
   ApiGithubRoute: typeof ApiGithubRoute
@@ -71,12 +187,61 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/': {
+      id: '/_app/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/artifacts': {
+      id: '/_app/artifacts'
+      path: '/artifacts'
+      fullPath: '/artifacts'
+      preLoaderRoute: typeof AppArtifactsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/browse': {
+      id: '/_app/browse'
+      path: '/browse'
+      fullPath: '/browse'
+      preLoaderRoute: typeof AppBrowseRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cli': {
+      id: '/_app/cli'
+      path: '/cli'
+      fullPath: '/cli'
+      preLoaderRoute: typeof AppCliRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/files': {
+      id: '/_app/files'
+      path: '/files'
+      fullPath: '/files'
+      preLoaderRoute: typeof AppFilesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/projects': {
+      id: '/_app/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof AppProjectsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/ship': {
+      id: '/_app/ship'
+      path: '/ship'
+      fullPath: '/ship'
+      preLoaderRoute: typeof AppShipRouteImport
+      parentRoute: typeof AppRoute
     }
     '/api/chat': {
       id: '/api/chat'
@@ -99,11 +264,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiGithubRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/trails/': {
+      id: '/_app/trails/'
+      path: '/trails'
+      fullPath: '/trails/'
+      preLoaderRoute: typeof AppTrailsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/trails/$trailId': {
+      id: '/_app/trails/$trailId'
+      path: '/trails/$trailId'
+      fullPath: '/trails/$trailId'
+      preLoaderRoute: typeof AppTrailsTrailIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppArtifactsRoute: typeof AppArtifactsRoute
+  AppBrowseRoute: typeof AppBrowseRoute
+  AppCliRoute: typeof AppCliRoute
+  AppFilesRoute: typeof AppFilesRoute
+  AppProjectsRoute: typeof AppProjectsRoute
+  AppShipRoute: typeof AppShipRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppTrailsTrailIdRoute: typeof AppTrailsTrailIdRoute
+  AppTrailsIndexRoute: typeof AppTrailsIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppArtifactsRoute: AppArtifactsRoute,
+  AppBrowseRoute: AppBrowseRoute,
+  AppCliRoute: AppCliRoute,
+  AppFilesRoute: AppFilesRoute,
+  AppProjectsRoute: AppProjectsRoute,
+  AppShipRoute: AppShipRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppTrailsTrailIdRoute: AppTrailsTrailIdRoute,
+  AppTrailsIndexRoute: AppTrailsIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
   ApiCloudflareRoute: ApiCloudflareRoute,
   ApiGithubRoute: ApiGithubRoute,

@@ -51,7 +51,7 @@ export function Composer({
   }
 
   return (
-    <div className="px-3 pb-24 md:px-4 md:pb-4">
+    <div className="px-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:px-4 md:pb-4">
       <div
         className={cn(
           "mx-auto flex w-full max-w-3xl flex-col rounded-2xl bg-card p-2 pl-3 shadow-hairline",

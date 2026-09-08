@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Command } from "cmdk";
 import { Box, FileCode, FolderGit2, Globe, MessageSquare, Plus, Search, SquareTerminal, Upload } from "lucide-react";
 import { useWorkStore } from "@/lib/work/store";
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const trails = useWorkStore((s) => s.trails);
   const projects = useWorkStore((s) => s.projects);
   const startTrail = useWorkStore((s) => s.startTrail);
   const setActiveTrail = useWorkStore((s) => s.setActiveTrail);
   const setActiveProject = useWorkStore((s) => s.setActiveProject);
   const openSideTab = useWorkStore((s) => s.openSideTab);
-  const toggleSidebar = useWorkStore((s) => s.toggleSidebar);
-  const toggleTerminal = useWorkStore((s) => s.toggleTerminal);
   const createProject = useWorkStore((s) => s.createProject);
-  const setNavView = useWorkStore((s) => s.setNavView);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -41,7 +40,8 @@ export function CommandPalette() {
         <Command.Group heading="Actions">
           <Command.Item
             onSelect={() => {
-              startTrail();
+              const id = startTrail();
+              void navigate({ to: "/trails/$trailId", params: { trailId: id } });
               setOpen(false);
             }}
           >
@@ -51,6 +51,7 @@ export function CommandPalette() {
           <Command.Item
             onSelect={() => {
               createProject();
+              void navigate({ to: "/projects" });
               setOpen(false);
             }}
           >
@@ -68,16 +69,16 @@ export function CommandPalette() {
           </Command.Item>
           <Command.Item
             onSelect={() => {
-              toggleTerminal();
+              void navigate({ to: "/cli" });
               setOpen(false);
             }}
           >
             <SquareTerminal className="size-4" />
-            Toggle CLI
+            Open CLI
           </Command.Item>
           <Command.Item
             onSelect={() => {
-              openSideTab("browser", { ephemeral: false });
+              void navigate({ to: "/browse" });
               setOpen(false);
             }}
           >
@@ -86,7 +87,7 @@ export function CommandPalette() {
           </Command.Item>
           <Command.Item
             onSelect={() => {
-              openSideTab("files", { ephemeral: false });
+              void navigate({ to: "/files" });
               setOpen(false);
             }}
           >
@@ -95,7 +96,7 @@ export function CommandPalette() {
           </Command.Item>
           <Command.Item
             onSelect={() => {
-              openSideTab("artifacts", { ephemeral: false });
+              void navigate({ to: "/artifacts" });
               setOpen(false);
             }}
           >
@@ -104,7 +105,7 @@ export function CommandPalette() {
           </Command.Item>
           <Command.Item
             onSelect={() => {
-              openSideTab("deploy", { ephemeral: false });
+              void navigate({ to: "/ship" });
               setOpen(false);
             }}
           >
@@ -113,12 +114,12 @@ export function CommandPalette() {
           </Command.Item>
           <Command.Item
             onSelect={() => {
-              toggleSidebar();
+              void navigate({ to: "/trails" });
               setOpen(false);
             }}
           >
             <Search className="size-4" />
-            Toggle sidebar
+            Trails
           </Command.Item>
         </Command.Group>
         <Command.Group heading="Projects">
@@ -128,7 +129,7 @@ export function CommandPalette() {
               value={`project ${project.name}`}
               onSelect={() => {
                 setActiveProject(project.id);
-                setNavView("trails");
+                void navigate({ to: "/trails" });
                 setOpen(false);
               }}
             >
@@ -143,6 +144,7 @@ export function CommandPalette() {
               value={trail.title}
               onSelect={() => {
                 setActiveTrail(trail.id);
+                void navigate({ to: "/trails/$trailId", params: { trailId: trail.id } });
                 setOpen(false);
               }}
             >

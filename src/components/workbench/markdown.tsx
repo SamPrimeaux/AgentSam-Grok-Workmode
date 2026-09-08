@@ -1,4 +1,5 @@
 import { useMemo, type ReactNode } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Check, Copy, FileCode, Globe, Play } from "lucide-react";
@@ -38,6 +39,7 @@ function CodeBlock({
   const selectFile = useWorkStore((s) => s.selectFile);
   const upsertFile = useWorkStore((s) => s.upsertFile);
   const enqueueCommand = useWorkStore((s) => s.enqueueCommand);
+  const navigate = useNavigate();
   const artifacts = useMemo(() => extractArtifacts("```" + language + "\n" + text + "\n```"), [language, text]);
   const artifact = artifacts[0];
   const runnable = SHELL_LANGS.has((language.split(/\s+/)[0] ?? "").toLowerCase());
@@ -60,6 +62,7 @@ function CodeBlock({
                   const cmd = line.replace(/^\s*\$\s?/, "").trim();
                   if (cmd && !cmd.startsWith("#")) enqueueCommand(cmd);
                 }
+                void navigate({ to: "/cli" });
               }}
             >
               <Play className="size-3.5" />
@@ -83,6 +86,7 @@ function CodeBlock({
                   .projects.find((p) => p.id === projectId)
                   ?.files.find((f) => f.path === file.path);
                 if (saved) selectFile(saved.id);
+                void navigate({ to: "/files" });
               }}
             >
               <FileCode className="size-3.5" />
@@ -104,6 +108,7 @@ export function MessageMarkdown({
   content: string;
   trailId?: string;
 }) {
+  const navigate = useNavigate();
   const openSideTab = useWorkStore((s) => s.openSideTab);
   const setTabUrl = useWorkStore((s) => s.setTabUrl);
   const sideTabs = useWorkStore((s) => s.sideTabs);
@@ -124,10 +129,10 @@ export function MessageMarkdown({
                   if (existing) {
                     useWorkStore.getState().setActiveSideTab(existing.id);
                     setTabUrl(existing.id, href);
-                    useWorkStore.setState({ sideOpen: true });
-                    return;
+                  } else {
+                    openSideTab("browser", { url: href, title: "Browser", ephemeral: false });
                   }
-                  openSideTab("browser", { url: href, title: "Browser", ephemeral: false });
+                  void navigate({ to: "/browse" });
                 }}
               >
                 {children}

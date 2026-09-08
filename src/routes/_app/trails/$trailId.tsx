@@ -1,0 +1,26 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { TrailWorkspace } from "@/components/shell/trail-workspace";
+import { Button } from "@/components/ui/button";
+import { useWorkStore } from "@/lib/work/store";
+
+export const Route = createFileRoute("/_app/trails/$trailId")({
+  component: TrailPage,
+});
+
+function TrailPage() {
+  const { trailId } = Route.useParams();
+  const trail = useWorkStore((s) => s.trails.find((t) => t.id === trailId));
+
+  if (!trail) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
+        <p className="text-sm text-muted-foreground">That trail is not on this device.</p>
+        <Button asChild variant="secondary">
+          <Link to="/trails">Back to trails</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  return <TrailWorkspace trail={trail} />;
+}

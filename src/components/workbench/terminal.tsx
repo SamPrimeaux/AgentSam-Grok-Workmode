@@ -6,6 +6,7 @@ import { downloadBytes, zipProject } from "@/lib/work/bundle";
 import { languageFromPath, uid } from "@/lib/utils";
 import { promptPath, runCommand } from "@/lib/work/shell";
 import { readSecrets, writeSecrets } from "@/lib/work/secrets";
+import { navigateApp } from "@/lib/work/navigate";
 import { slugify } from "@/lib/work/seed";
 import { useActiveProject, useWorkStore } from "@/lib/work/store";
 import type { Project, ShellEffect } from "@/lib/work/types";
@@ -26,7 +27,7 @@ function writeLines(term: { writeln: (s: string) => void }, text: string) {
   for (const line of text.split("\n")) term.writeln(line);
 }
 
-export function TerminalPane() {
+export function TerminalPane({ variant = "dock" }: { variant?: "dock" | "page" }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const project = useActiveProject();
   const projectRef = useRef(project);
@@ -103,6 +104,7 @@ export function TerminalPane() {
           case "open-file": {
             const file = proj.files.find((f) => f.path === effect.path);
             if (file) store.selectFile(file.id);
+            navigateApp("/files");
             return proj;
           }
           case "open-browser":
@@ -112,9 +114,11 @@ export function TerminalPane() {
               url: effect.url ?? "",
               ephemeral: false,
             });
+            navigateApp("/browse");
             return proj;
           case "vibe":
             void store.send(store.activeTrailId, "trail", effect.prompt);
+            navigateApp({ to: "/trails/$trailId", params: { trailId: store.activeTrailId } });
             return proj;
           case "download-zip": {
             const bytes = zipProject(proj.files, proj.name);
@@ -135,7 +139,7 @@ export function TerminalPane() {
             const repo = proj.deploy.githubRepo.trim() || slugify(proj.name);
             if (!owner) {
               term.writeln("Set GitHub owner in Ship, or: git remote add origin https://github.com/owner/repo.git");
-              store.openSideTab("deploy", { ephemeral: false });
+              navigateApp("/ship");
               return proj;
             }
             try {
@@ -388,21 +392,23 @@ export function TerminalPane() {
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
-      <div className="flex h-8 shrink-0 items-center gap-2 border-t border-border px-2">
-        <span className="px-1 font-mono text-[11px] tracking-wide text-muted-foreground uppercase">CLI</span>
-        <span className="truncate font-mono text-[11px] text-clay">{project.name}</span>
-        <Button
-          type="button"
-          size="icon-sm"
-          variant="ghost"
-          className="ml-auto size-7"
-          aria-label="Close terminal"
-          onClick={() => useWorkStore.getState().setTerminalOpen(false)}
-        >
-          <X className="size-3.5" />
-        </Button>
-      </div>
-      <div ref={hostRef} className="terminal-host min-h-0 flex-1" />
+      {variant === "dock" ? (
+        <div className="flex h-8 shrink-0 items-center gap-2 border-t border-border px-2">
+          <span className="px-1 font-mono text-[11px] tracking-wide text-muted-foreground uppercase">CLI</span>
+          <span className="truncate font-mono text-[11px] text-clay">{project.name}</span>
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="ghost"
+            className="ml-auto size-7"
+            aria-label="Close terminal"
+            onClick={() => useWorkStore.getState().setTerminalOpen(false)}
+          >
+            <X className="size-3.5" />
+          </Button>
+        </div>
+      ) : null}
+      <div ref={hostRef} className="terminal-host min-h-0 flex-1 px-1 pb-[env(safe-area-inset-bottom)]" />
     </div>
   );
 }

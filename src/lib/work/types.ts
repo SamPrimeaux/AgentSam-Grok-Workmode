@@ -97,6 +97,15 @@ export type ChatTarget = { kind: "trail"; id: string } | { kind: "side"; id: str
 
 export type NavView = "trails" | "projects" | "artifacts";
 
+export type OfflineQueuedSend = {
+  id: string;
+  targetId: string;
+  targetKind: "trail" | "side";
+  text: string;
+  noteId: string;
+  createdAt: number;
+};
+
 export type ShellEffect =
   | { type: "clear" }
   | { type: "open-file"; path: string }

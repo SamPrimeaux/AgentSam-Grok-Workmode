@@ -9,6 +9,7 @@ import type {
   Artifact,
   ChatMessage,
   NavView,
+  OfflineQueuedSend,
   Project,
   SideKind,
   SideTab,
@@ -22,7 +23,7 @@ const WELCOME_MESSAGE: ChatMessage = {
   id: "welcome-msg",
   role: "assistant",
   content:
-    "You are in AgentSam Work.\n\nThis pane is a **stored trail**. Projects hold the workspace. Artifacts catch files, previews, and deploys. The CLI is a real xterm over a virtual git + wrangler bench — side chats stay ephemeral unless you keep them.\n\nWhat are you working on?",
+    "You are in AgentSam Work.\n\nThis pane is a **stored trail**. Use the rail for Projects, Artifacts, Files, Ship, and a full-page **CLI** built for phones — it keeps working offline. Trails and projects stay on this device.\n\nWhat are you working on?",
   createdAt: 1_746_000_000_000,
 };
 
@@ -123,6 +124,7 @@ type WorkState = {
   search: string;
   confirmDiscardId: string | null;
   pendingCommands: string[];
+  offlineQueue: OfflineQueuedSend[];
   setHydrated: (value: boolean) => void;
   setSearch: (value: string) => void;
   setDraft: (id: string, value: string) => void;
@@ -136,7 +138,8 @@ type WorkState = {
   setSettingsOpen: (open: boolean) => void;
   toggleTerminal: () => void;
   setActiveTrail: (id: string) => void;
-  startTrail: () => void;
+  startTrail: () => string;
+  flushOfflineQueue: () => Promise<void>;
   renameTrail: (id: string, title: string) => void;
   pinTrail: (id: string) => void;
   deleteTrail: (id: string) => void;
@@ -233,6 +236,7 @@ export const useWorkStore = create<WorkState>()(
       search: "",
       confirmDiscardId: null,
       pendingCommands: [],
+      offlineQueue: [],
       setHydrated: (value) => set({ hydrated: value }),
       setSearch: (search) => set({ search }),
       setDraft: (id, value) => set((s) => ({ drafts: { ...s.drafts, [id]: value } })),
@@ -248,13 +252,144 @@ export const useWorkStore = create<WorkState>()(
       setActiveTrail: (id) => set({ activeTrailId: id, navView: "trails" }),
       startTrail: () => {
         const current = get().trails.find((t) => t.id === get().activeTrailId);
-        if (current && current.messages.length === 0 && current.title === "New trail") return;
+        if (current && current.messages.length === 0 && current.title === "New trail") {
+          return current.id;
+        }
         const trail = newTrail({ projectId: get().activeProjectId });
         set((s) => ({
           trails: [trail, ...s.trails],
           activeTrailId: trail.id,
           navView: "trails",
         }));
+        return trail.id;
+      },
+      flushOfflineQueue: async () => {
+        if (typeof navigator !== "undefined" && !navigator.onLine) return;
+        const queue = [...get().offlineQueue];
+        if (!queue.length) return;
+        set({ offlineQueue: [] });
+
+        for (const item of queue) {
+          const assistantId = uid();
+          const replaceNote = (messages: ChatMessage[]) => {
+            const without = messages.filter((m) => m.id !== item.noteId);
+            return [
+              ...without,
+              { id: assistantId, role: "assistant" as const, content: "", createdAt: Date.now() },
+            ];
+          };
+
+          if (item.targetKind === "trail") {
+            set((s) => ({
+              trails: s.trails.map((t) =>
+                t.id === item.targetId
+                  ? { ...t, updatedAt: Date.now(), messages: replaceNote(t.messages) }
+                  : t,
+              ),
+              streamingIds: s.streamingIds.includes(item.targetId)
+                ? s.streamingIds
+                : [...s.streamingIds, item.targetId],
+            }));
+          } else {
+            set((s) => ({
+              sideTabs: s.sideTabs.map((t) =>
+                t.id === item.targetId ? { ...t, messages: replaceNote(t.messages) } : t,
+              ),
+              streamingIds: s.streamingIds.includes(item.targetId)
+                ? s.streamingIds
+                : [...s.streamingIds, item.targetId],
+            }));
+          }
+
+          const controller = new AbortController();
+          aborts.set(item.targetId, controller);
+          const after = get();
+          let history: ChatMessage[] = [];
+          let parentTitle: string | null = null;
+          let parentExcerpt: string | null = null;
+          if (item.targetKind === "trail") {
+            history = after.trails.find((t) => t.id === item.targetId)?.messages ?? [];
+          } else {
+            const tab = after.sideTabs.find((t) => t.id === item.targetId);
+            history = tab?.messages ?? [];
+            const parent = after.trails.find((t) => t.id === tab?.parentTrailId);
+            parentTitle = parent?.title ?? null;
+            parentExcerpt = excerptOf(parent);
+          }
+
+          const payload = history
+            .filter((m) => m.id !== assistantId && m.content.trim())
+            .slice(-16)
+            .map((m) => ({ role: m.role, content: m.content }));
+
+          const project = after.projects.find((p) => p.id === after.activeProjectId) ?? after.projects[0]!;
+
+          const write = (content: string, done = false) => {
+            if (item.targetKind === "trail") {
+              set((s) => ({
+                trails: s.trails.map((t) =>
+                  t.id === item.targetId
+                    ? {
+                        ...t,
+                        updatedAt: Date.now(),
+                        messages: t.messages.map((m) => (m.id === assistantId ? { ...m, content } : m)),
+                        files: done ? mergeArtifacts(t.files, extractArtifacts(content, t.id)) : t.files,
+                      }
+                    : t,
+                ),
+              }));
+            } else {
+              set((s) => ({
+                sideTabs: s.sideTabs.map((t) =>
+                  t.id === item.targetId
+                    ? {
+                        ...t,
+                        messages: t.messages.map((m) => (m.id === assistantId ? { ...m, content } : m)),
+                      }
+                    : t,
+                ),
+              }));
+            }
+            if (done) {
+              const captured = extractArtifacts(content, item.targetId);
+              if (captured.length) {
+                const parentId = get().activeProjectId;
+                set((s) => ({
+                  projects: s.projects.map((p) =>
+                    p.id === parentId
+                      ? { ...p, files: mergeArtifacts(p.files, captured), updatedAt: Date.now() }
+                      : p,
+                  ),
+                }));
+              }
+            }
+          };
+
+          try {
+            let assembled = "";
+            await streamChat({
+              messages: payload,
+              mode: item.targetKind,
+              model: after.modelId,
+              parentTitle,
+              parentExcerpt,
+              workspace: workspacePayload(project),
+              signal: controller.signal,
+              onDelta: (chunk) => {
+                assembled += chunk;
+                write(assembled, false);
+              },
+            });
+            write(assembled, true);
+          } catch (err) {
+            if ((err as Error).name === "AbortError") continue;
+            const message = err instanceof Error ? err.message : "The studio model could not reply.";
+            write(message, true);
+          } finally {
+            aborts.delete(item.targetId);
+            set((s) => ({ streamingIds: s.streamingIds.filter((x) => x !== item.targetId) }));
+          }
+        }
       },
       renameTrail: (id, title) =>
         set((s) => ({
@@ -455,7 +590,6 @@ export const useWorkStore = create<WorkState>()(
       enqueueCommand: (cmd) =>
         set((s) => ({
           pendingCommands: [...s.pendingCommands, cmd],
-          terminalOpen: true,
         })),
       consumeCommands: () => {
         const cmds = get().pendingCommands;
@@ -472,6 +606,57 @@ export const useWorkStore = create<WorkState>()(
         if (state.streamingIds.includes(targetId)) return;
         const draft = (text ?? state.drafts[targetId] ?? "").trim();
         if (!draft) return;
+
+        const offline = typeof navigator !== "undefined" && !navigator.onLine;
+        if (offline) {
+          const noteId = uid();
+          const queued: OfflineQueuedSend = {
+            id: uid(),
+            targetId,
+            targetKind,
+            text: draft.slice(0, 12000),
+            noteId,
+            createdAt: Date.now(),
+          };
+          const userMsg: ChatMessage = {
+            id: uid(),
+            role: "user",
+            content: queued.text,
+            createdAt: Date.now(),
+          };
+          const note: ChatMessage = {
+            id: noteId,
+            role: "assistant",
+            content:
+              "Saved on this device — you're offline. Open **CLI** from the rail to keep shipping locally. This message will retry when you're back online.",
+            createdAt: Date.now(),
+          };
+          if (targetKind === "trail") {
+            set((s) => ({
+              drafts: { ...s.drafts, [targetId]: "" },
+              offlineQueue: [...s.offlineQueue, queued],
+              trails: s.trails.map((t) =>
+                t.id === targetId
+                  ? {
+                      ...t,
+                      title: t.messages.length === 0 ? titleFromText(userMsg.content) : t.title,
+                      updatedAt: Date.now(),
+                      messages: [...t.messages, userMsg, note],
+                    }
+                  : t,
+              ),
+            }));
+          } else {
+            set((s) => ({
+              drafts: { ...s.drafts, [targetId]: "" },
+              offlineQueue: [...s.offlineQueue, queued],
+              sideTabs: s.sideTabs.map((t) =>
+                t.id === targetId ? { ...t, messages: [...t.messages, userMsg, note] } : t,
+              ),
+            }));
+          }
+          return;
+        }
 
         const userMsg: ChatMessage = {
           id: uid(),
@@ -607,8 +792,13 @@ export const useWorkStore = create<WorkState>()(
       skipHydration: true,
       version: 2,
       merge: (persisted, current) => {
-        const shaped = ensureShape((persisted ?? {}) as Partial<WorkState>);
-        return { ...current, ...shaped };
+        const raw = (persisted ?? {}) as Partial<WorkState>;
+        const shaped = ensureShape(raw);
+        return {
+          ...current,
+          ...shaped,
+          offlineQueue: Array.isArray(raw.offlineQueue) ? raw.offlineQueue : [],
+        };
       },
       partialize: (s) => ({
         projects: s.projects,
@@ -623,6 +813,7 @@ export const useWorkStore = create<WorkState>()(
         modelId: s.modelId,
         sideTabs: s.sideTabs,
         activeSideTabId: s.activeSideTabId,
+        offlineQueue: s.offlineQueue,
       }),
     },
   ),

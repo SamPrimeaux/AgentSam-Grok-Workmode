@@ -9,12 +9,19 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1",
+      },
       { title: APP_NAME },
       { name: "theme-color", content: "#070708" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "mobile-web-app-capable", content: "yes" },
       {
         name: "description",
-        content: "AgentSam Work — trails, projects, artifacts, Monaco, and a CLI to ship via GitHub or Cloudflare.",
+        content:
+          "AgentSam Work — mobile-first trails, projects, artifacts, and an offline-ready CLI to ship via GitHub or Cloudflare.",
       },
     ],
     links: [

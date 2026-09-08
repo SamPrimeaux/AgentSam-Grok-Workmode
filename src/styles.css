@@ -43,6 +43,8 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
   }
 
   button:not(:disabled),
@@ -60,6 +62,7 @@
     background: var(--color-background);
     color: var(--color-foreground);
     min-height: 100dvh;
+    overscroll-behavior: none;
   }
 
   ::selection {

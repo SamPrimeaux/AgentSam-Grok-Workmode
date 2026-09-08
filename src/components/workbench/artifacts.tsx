@@ -1,4 +1,5 @@
 import { Box, Cloud, FileCode, Globe, Trash2 } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { shortTime } from "@/lib/utils";
 import { useActiveProject, useWorkStore } from "@/lib/work/store";
@@ -13,6 +14,7 @@ function kindOf(file: Artifact) {
 }
 
 export function ArtifactsStage() {
+  const navigate = useNavigate();
   const project = useActiveProject();
   const selectFile = useWorkStore((s) => s.selectFile);
   const deleteFile = useWorkStore((s) => s.deleteFile);
@@ -55,13 +57,20 @@ export function ArtifactsStage() {
                           srcdoc: file.content,
                           ephemeral: false,
                         });
+                        void navigate({ to: "/browse" });
                         return;
                       }
                       if (kind === "deploy" && file.url) {
-                        openSideTab("browser", { url: file.url, title: file.title ?? "Deploy", ephemeral: false });
+                        openSideTab("browser", {
+                          url: file.url,
+                          title: file.title ?? "Deploy",
+                          ephemeral: false,
+                        });
+                        void navigate({ to: "/browse" });
                         return;
                       }
                       selectFile(file.id);
+                      void navigate({ to: "/files" });
                     }}
                   >
                     {kind === "deploy" ? (
