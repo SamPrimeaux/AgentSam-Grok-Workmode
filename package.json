@@ -23,7 +23,8 @@
     "cf:d1:list": "wrangler d1 list",
     "cf:d1:tables": "wrangler d1 execute inneranimalmedia-business --remote --command=\"SELECT name FROM sqlite_master WHERE type='table' AND (name LIKE '%secret%' OR name LIKE '%oauth%' OR name='agentsam_user_ui_preferences') ORDER BY name;\"",
     "cf:deploy": "wrangler deploy -c wrangler.workmode.toml",
-    "cf:tail": "wrangler tail agentsam-workmode"
+    "cf:tail": "wrangler tail agentsam-workmode",
+    "cf:tail:ui": "wrangler tail agentsam-grok-workmode"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",

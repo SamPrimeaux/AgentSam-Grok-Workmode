@@ -3,9 +3,12 @@
 Calm vibecode bench: persistent trails, helper chats, in-app browser, Monaco, xterm CLI, projects/artifacts, model picker, and GitHub / Cloudflare ship.
 
 **Repo:** [SamPrimeaux/AgentSam-Grok-Workmode](https://github.com/SamPrimeaux/AgentSam-Grok-Workmode)  
+**Account ID:** `ede6590ac0d2fb7daf155b35653457b2`  
 **Canonical D1:** `inneranimalmedia-business` (`cf87b717-d4e2-4cf8-bab0-a81268e32d49`)  
-**Live vault Worker:** https://agentsam-workmode.meauxbility.workers.dev  
-**Health:** `GET /health` → `{ ok, d1, vault_key, api_key }`
+**Product domain:** https://simple.inneranimalmedia.com  
+**UI Worker:** `agentsam-grok-workmode` → https://agentsam-grok-workmode.meauxbility.workers.dev  
+**Vault Worker:** `agentsam-workmode` → https://agentsam-workmode.meauxbility.workers.dev  
+**Vault on domain:** `GET https://simple.inneranimalmedia.com/health` · `/api/vault/*`
 
 ---
 
@@ -73,35 +76,21 @@ Docs: [agentsam-sdk](https://github.com/SamPrimeaux/agentsam-sdk)
 
 | Binding | Value |
 | --- | --- |
+| Account ID | `ede6590ac0d2fb7daf155b35653457b2` |
 | Account | Inner Animal Media Cloudflare account |
 | D1 name | `inneranimalmedia-business` |
 | D1 UUID | `cf87b717-d4e2-4cf8-bab0-a81268e32d49` |
- Worker URL
-Production
-agentsam-grok-workmode.meauxbility.workers.dev
+| Product host | `simple.inneranimalmedia.com` |
+| UI Worker | `agentsam-grok-workmode` (SPA on `/*`) |
+| Vault Worker | `agentsam-workmode` (`/health`, `/api/vault*`) |
+| workers.dev (UI) | `agentsam-grok-workmode.meauxbility.workers.dev` |
+| workers.dev (vault) | `agentsam-workmode.meauxbility.workers.dev` |
 
-
-Preview
-*-agentsam-grok-workmode.meauxbility.workers.dev
-
-
-Custom Domains and Routes
-
-Search domains
-
-Name
-
-Environment
-
-Zone
-More options
-simple.inneranimalmedia.com
-Production	 
 Copy the example Worker config:
 
 ```bash
 cp wrangler.toml.example wrangler.toml
-# edit name= if you need a different Worker script name
+# live SSOT is wrangler.workmode.toml (account_id + domain routes baked in)
 ```
 
 ### Auth for Wrangler (never commit tokens)
@@ -171,8 +160,9 @@ Smoke (replace bearer + user):
 
 ```bash
 curl -sS https://agentsam-workmode.meauxbility.workers.dev/health
+curl -sS https://simple.inneranimalmedia.com/health
 
-curl -sS -X POST https://agentsam-workmode.meauxbility.workers.dev/api/vault/secrets \
+curl -sS -X POST https://simple.inneranimalmedia.com/api/vault/secrets \
   -H "Authorization: Bearer $WORKMODE_API_KEY" \
   -H "X-User-Id: au_…" \
   -H "content-type: application/json" \
