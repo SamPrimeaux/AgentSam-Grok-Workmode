@@ -76,8 +76,27 @@ Docs: [agentsam-sdk](https://github.com/SamPrimeaux/agentsam-sdk)
 | Account | Inner Animal Media Cloudflare account |
 | D1 name | `inneranimalmedia-business` |
 | D1 UUID | `cf87b717-d4e2-4cf8-bab0-a81268e32d49` |
-| Example Worker name | `agentsam-workmode` |
+ Worker URL
+Production
+agentsam-grok-workmode.meauxbility.workers.dev
 
+
+Preview
+*-agentsam-grok-workmode.meauxbility.workers.dev
+
+
+Custom Domains and Routes
+
+Search domains
+
+Name
+
+Environment
+
+Zone
+More options
+simple.inneranimalmedia.com
+Production	 
 Copy the example Worker config:
 
 ```bash
