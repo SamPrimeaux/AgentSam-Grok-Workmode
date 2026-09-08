@@ -92,7 +92,7 @@ cp wrangler.toml.example wrangler.toml
 npx wrangler login
 
 # or export a scoped API token in your shell only
-export CLOUDFLARE_ACCOUNT_ID="<your-account-id>"
+export CLOUDFLARE_ACCOUNT_ID="ede6590ac0d2fb7daf155b35653457b2"
 export CLOUDFLARE_API_TOKEN="<token-with-workers+d1>"
 ```
 
