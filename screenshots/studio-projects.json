@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/projects",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "AgentSam",
+      "hasCanvas": false,
+      "bodyTextLen": 79,
+      "bodyTextHash": "cb5ce3aac8322e436ea58d1642e22ad673fb20ce50747198a12b2d24318d80b8",
+      "bodyTextPrefix": "Projects Workspaces with files, git, and ship targets Studio 6 f",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/studio-projects.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "AgentSam",
+      "hasCanvas": false,
+      "bodyTextLen": 79,
+      "bodyTextHash": "cb5ce3aac8322e436ea58d1642e22ad673fb20ce50747198a12b2d24318d80b8",
+      "bodyTextPrefix": "Projects Workspaces with files, git, and ship targets Studio 6 f",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/studio-projects-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/studio-projects.json"
+}

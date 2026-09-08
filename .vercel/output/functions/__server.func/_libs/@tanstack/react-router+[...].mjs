@@ -1,7 +1,7 @@
 import { i as __toESM, r as __require, t as __commonJSMin } from "../../_runtime.mjs";
-import { c as require_jsx_runtime } from "../@radix-ui/react-collection+[...].mjs";
 import { l as require_react_dom, u as require_react } from "../@floating-ui/react-dom+[...].mjs";
 import { r as parseHref } from "../tanstack__history.mjs";
+import { c as require_jsx_runtime } from "../@radix-ui/react-collection+[...].mjs";
 import { PassThrough, Readable } from "node:stream";
 import { ReadableStream as ReadableStream$1 } from "node:stream/web";
 //#region node_modules/@tanstack/router-core/dist/esm/not-found.js
@@ -3791,11 +3791,11 @@ var BaseRootRoute = class extends BaseRoute {
 };
 //#endregion
 //#region node_modules/@tanstack/router-core/dist/esm/ssr/constants.js
-var import_jsx_runtime = require_jsx_runtime();
 var GLOBAL_TSR = "$_TSR";
 var TSR_SCRIPT_BARRIER_ID = "$tsr-stream-barrier";
 //#endregion
 //#region node_modules/@tanstack/react-router/dist/esm/CatchBoundary.js
+var import_jsx_runtime = require_jsx_runtime();
 var CatchBoundary = class extends import_react.Component {
 	constructor(..._args) {
 		super(..._args);
@@ -5132,6 +5132,28 @@ function RouterProvider({ router, ...rest }) {
 		...rest,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Matches, {})
 	});
+}
+//#endregion
+//#region node_modules/@tanstack/react-router/dist/esm/useRouterState.js
+/**
+* Subscribe to the router's state store with optional selection and
+* structural sharing for render optimization.
+*
+* Options:
+* - `select`: Project the full router state to a derived slice
+* - `structuralSharing`: Replace-equal semantics for stable references
+* - `router`: Read state from a specific router instance instead of context
+*
+* @returns The selected router state (or the full state by default).
+* @link https://tanstack.com/router/latest/docs/framework/react/api/router/useRouterStateHook
+*/
+function useRouterState(opts) {
+	const contextRouter = useRouter({ warn: opts?.router === void 0 });
+	const router = opts?.router || contextRouter;
+	{
+		const state = router.stores.__store.get();
+		return opts?.select ? opts.select(state) : state;
+	}
 }
 //#endregion
 //#region node_modules/@tanstack/react-router/dist/esm/Asset.js
@@ -14542,4 +14564,4 @@ var renderRouterToStream = async ({ request, router, responseHeaders, children }
 	throw new Error("No renderToReadableStream or renderToPipeableStream found in react-dom/server. Ensure you are using a version of react-dom that supports streaming.");
 };
 //#endregion
-export { dehydrateSsrMatchId as A, getStylesheetHref as C, executeRewriteInput as D, _getRenderedMatches as E, isNotFound as F, isResolvedRedirect as M, decodePath as N, invariant as O, rootRouteId as P, getScriptPreloadAttrs as S, resolveManifestCssLink as T, useRouter as _, isSsrResponse as a, createInlineCssPlaceholderAsset as b, stripSsrResponseBody as c, RouterProvider as d, createRouter as f, createRootRoute as g, createFileRoute as h, disposeSsrResponseDetached as i, isRedirect as j, createSieveCache as k, Scripts as l, lazyRouteComponent as m, bindSsrResponseToRequest as n, normalizeSsrResponse as o, Outlet as p, defineHandlerCallback as r, replaceSsrResponse as s, renderRouterToStream as t, HeadContent as u, GLOBAL_TSR as v, resolveManifestAssetLink as w, createInlineCssStyleAsset as x, TSR_SCRIPT_BARRIER_ID as y };
+export { executeRewriteInput as A, createInlineCssPlaceholderAsset as C, resolveManifestAssetLink as D, getStylesheetHref as E, isResolvedRedirect as F, redirect as I, decodePath as L, createSieveCache as M, dehydrateSsrMatchId as N, resolveManifestCssLink as O, isRedirect as P, rootRouteId as R, TSR_SCRIPT_BARRIER_ID as S, getScriptPreloadAttrs as T, createRootRoute as _, isSsrResponse as a, useRouter as b, stripSsrResponseBody as c, useRouterState as d, RouterProvider as f, createFileRoute as g, lazyRouteComponent as h, disposeSsrResponseDetached as i, invariant as j, _getRenderedMatches as k, Scripts as l, Outlet as m, bindSsrResponseToRequest as n, normalizeSsrResponse as o, createRouter as p, defineHandlerCallback as r, replaceSsrResponse as s, renderRouterToStream as t, HeadContent as u, Link as v, createInlineCssStyleAsset as w, GLOBAL_TSR as x, useNavigate as y, isNotFound as z };

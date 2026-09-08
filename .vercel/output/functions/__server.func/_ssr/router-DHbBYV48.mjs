@@ -1,10 +1,10 @@
 import { i as __toESM } from "../_runtime.mjs";
-import { c as require_jsx_runtime } from "../_libs/@radix-ui/react-collection+[...].mjs";
 import { u as require_react } from "../_libs/@floating-ui/react-dom+[...].mjs";
-import { _ as useRouter, f as createRouter, g as createRootRoute, h as createFileRoute, l as Scripts, m as lazyRouteComponent, p as Outlet, u as HeadContent } from "../_libs/@tanstack/react-router+[...].mjs";
-import { r as TriangleAlert } from "../_libs/lucide-react.mjs";
+import { I as redirect, _ as createRootRoute, b as useRouter, g as createFileRoute, h as lazyRouteComponent, l as Scripts, m as Outlet, p as createRouter, u as HeadContent } from "../_libs/@tanstack/react-router+[...].mjs";
+import { c as require_jsx_runtime } from "../_libs/@radix-ui/react-collection+[...].mjs";
+import { i as TriangleAlert } from "../_libs/lucide-react.mjs";
 import { a as number, c as union, i as literal, n as array, o as object, r as boolean, s as string, t as _enum } from "../_libs/zod.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-Dvu2_7E1.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-DHbBYV48.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var __defProp = Object.defineProperty;
@@ -308,15 +308,15 @@ function PreviewHostBridge() {
 	}, [router]);
 	return null;
 }
-var styles_default = "/assets/styles-C1tqBePz.css";
+var styles_default = "/assets/styles-BXX3sL9j.css";
 var APP_NAME = "AgentSam";
-var Route$4 = createRootRoute({
+var Route$13 = createRootRoute({
 	head: () => ({
 		meta: [
 			{ charSet: "utf-8" },
 			{
 				name: "viewport",
-				content: "width=device-width, initial-scale=1"
+				content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1"
 			},
 			{ title: APP_NAME },
 			{
@@ -324,8 +324,20 @@ var Route$4 = createRootRoute({
 				content: "#070708"
 			},
 			{
+				name: "apple-mobile-web-app-capable",
+				content: "yes"
+			},
+			{
+				name: "apple-mobile-web-app-status-bar-style",
+				content: "black-translucent"
+			},
+			{
+				name: "mobile-web-app-capable",
+				content: "yes"
+			},
+			{
 				name: "description",
-				content: "AgentSam Work — trails, projects, artifacts, Monaco, and a CLI to ship via GitHub or Cloudflare."
+				content: "AgentSam Work — mobile-first trails, projects, artifacts, and an offline-ready CLI to ship via GitHub or Cloudflare."
 			}
 		],
 		links: [
@@ -375,8 +387,27 @@ var Route$4 = createRootRoute({
 		})]
 	})
 });
-var $$splitComponentImporter = () => import("./routes-Ds5GGSpN.mjs");
-var Route$3 = createFileRoute("/")({ component: lazyRouteComponent($$splitComponentImporter, "component") });
+var $$splitComponentImporter$9 = () => import("../_app-BZ4k5cvN.mjs");
+var Route$12 = createFileRoute("/_app")({ component: lazyRouteComponent($$splitComponentImporter$9, "component") });
+var $$splitComponentImporter$8 = () => import("../_app-C6C_z9tA.mjs");
+var Route$11 = createFileRoute("/_app/")({
+	beforeLoad: () => {
+		throw redirect({ to: "/trails" });
+	},
+	component: lazyRouteComponent($$splitComponentImporter$8, "component")
+});
+var $$splitComponentImporter$7 = () => import("./artifacts-Cz9F6FPt.mjs");
+var Route$10 = createFileRoute("/_app/artifacts")({ component: lazyRouteComponent($$splitComponentImporter$7, "component") });
+var $$splitComponentImporter$6 = () => import("./browse-BueLXIOi.mjs");
+var Route$9 = createFileRoute("/_app/browse")({ component: lazyRouteComponent($$splitComponentImporter$6, "component") });
+var $$splitComponentImporter$5 = () => import("./cli-C7ELpW--.mjs");
+var Route$8 = createFileRoute("/_app/cli")({ component: lazyRouteComponent($$splitComponentImporter$5, "component") });
+var $$splitComponentImporter$4 = () => import("./files-CCIm6MrU.mjs");
+var Route$7 = createFileRoute("/_app/files")({ component: lazyRouteComponent($$splitComponentImporter$4, "component") });
+var $$splitComponentImporter$3 = () => import("./projects-CejOXVLo.mjs");
+var Route$6 = createFileRoute("/_app/projects")({ component: lazyRouteComponent($$splitComponentImporter$3, "component") });
+var $$splitComponentImporter$2 = () => import("./ship-wigjN-Mb.mjs");
+var Route$5 = createFileRoute("/_app/ship")({ component: lazyRouteComponent($$splitComponentImporter$2, "component") });
 var STUDIO_MODELS = [
 	{
 		id: "grok-4.6",
@@ -450,7 +481,7 @@ var SIDE_SYSTEM = `You are a focused AgentSam helper side-chat.
 Be concise. This session is ephemeral unless the user keeps it as a stored trail.
 When you create files, fence them with a path. No emoji unless asked.`;
 var BUILD_EXTRA = `You are in vibecode mode. Write complete, runnable files. Prefer small static sites, wrangler.toml, and GitHub Actions that deploy to Cloudflare Pages.`;
-var Route$2 = createFileRoute("/api/chat")({ server: { handlers: { POST: async ({ request }) => {
+var Route$4 = createFileRoute("/api/chat")({ server: { handlers: { POST: async ({ request }) => {
 	const apiKey = process.env.XAI_API_KEY;
 	if (!apiKey) return Response.json({ error: "AI is not available in this environment." }, { status: 503 });
 	let parsed;
@@ -582,7 +613,7 @@ async function cf(token, path, init) {
 function cfError(json) {
 	return (json?.errors)?.[0]?.message ?? "Cloudflare request failed";
 }
-var Route$1 = createFileRoute("/api/cloudflare")({ server: { handlers: { POST: async ({ request }) => {
+var Route$3 = createFileRoute("/api/cloudflare")({ server: { handlers: { POST: async ({ request }) => {
 	let parsed;
 	try {
 		parsed = Body$1.parse(await request.json());
@@ -661,7 +692,7 @@ async function gh(token, path, init) {
 		json
 	};
 }
-var Route = createFileRoute("/api/github")({ server: { handlers: { POST: async ({ request }) => {
+var Route$2 = createFileRoute("/api/github")({ server: { handlers: { POST: async ({ request }) => {
 	let parsed;
 	try {
 		parsed = Body.parse(await request.json());
@@ -764,29 +795,91 @@ var Route = createFileRoute("/api/github")({ server: { handlers: { POST: async (
 		files: blobs.length
 	});
 } } } });
-var rootRouteChildren = {
-	IndexRoute: Route$3.update({
-		id: "/",
-		path: "/",
-		getParentRoute: () => Route$4
+var $$splitComponentImporter$1 = () => import("./trails-BB6SGYEE.mjs");
+var Route$1 = createFileRoute("/_app/trails/")({ component: lazyRouteComponent($$splitComponentImporter$1, "component") });
+var $$splitComponentImporter = () => import("../_trailId-Ba9uaYMb.mjs");
+var Route = createFileRoute("/_app/trails/$trailId")({ component: lazyRouteComponent($$splitComponentImporter, "component") });
+var AppRoute = Route$12.update({
+	id: "/_app",
+	getParentRoute: () => Route$13
+});
+var AppIndexRoute = Route$11.update({
+	id: "/",
+	path: "/",
+	getParentRoute: () => AppRoute
+});
+var AppArtifactsRoute = Route$10.update({
+	id: "/artifacts",
+	path: "/artifacts",
+	getParentRoute: () => AppRoute
+});
+var AppBrowseRoute = Route$9.update({
+	id: "/browse",
+	path: "/browse",
+	getParentRoute: () => AppRoute
+});
+var AppCliRoute = Route$8.update({
+	id: "/cli",
+	path: "/cli",
+	getParentRoute: () => AppRoute
+});
+var AppFilesRoute = Route$7.update({
+	id: "/files",
+	path: "/files",
+	getParentRoute: () => AppRoute
+});
+var AppProjectsRoute = Route$6.update({
+	id: "/projects",
+	path: "/projects",
+	getParentRoute: () => AppRoute
+});
+var AppShipRoute = Route$5.update({
+	id: "/ship",
+	path: "/ship",
+	getParentRoute: () => AppRoute
+});
+var ApiChatRoute = Route$4.update({
+	id: "/api/chat",
+	path: "/api/chat",
+	getParentRoute: () => Route$13
+});
+var ApiCloudflareRoute = Route$3.update({
+	id: "/api/cloudflare",
+	path: "/api/cloudflare",
+	getParentRoute: () => Route$13
+});
+var ApiGithubRoute = Route$2.update({
+	id: "/api/github",
+	path: "/api/github",
+	getParentRoute: () => Route$13
+});
+var AppTrailsIndexRoute = Route$1.update({
+	id: "/trails/",
+	path: "/trails/",
+	getParentRoute: () => AppRoute
+});
+var AppRouteChildren = {
+	AppArtifactsRoute,
+	AppBrowseRoute,
+	AppCliRoute,
+	AppFilesRoute,
+	AppProjectsRoute,
+	AppShipRoute,
+	AppIndexRoute,
+	AppTrailsTrailIdRoute: Route.update({
+		id: "/trails/$trailId",
+		path: "/trails/$trailId",
+		getParentRoute: () => AppRoute
 	}),
-	ApiChatRoute: Route$2.update({
-		id: "/api/chat",
-		path: "/api/chat",
-		getParentRoute: () => Route$4
-	}),
-	ApiCloudflareRoute: Route$1.update({
-		id: "/api/cloudflare",
-		path: "/api/cloudflare",
-		getParentRoute: () => Route$4
-	}),
-	ApiGithubRoute: Route.update({
-		id: "/api/github",
-		path: "/api/github",
-		getParentRoute: () => Route$4
-	})
+	AppTrailsIndexRoute
 };
-var routeTree = Route$4._addFileChildren(rootRouteChildren)._addFileTypes();
+var rootRouteChildren = {
+	AppRoute: AppRoute._addFileChildren(AppRouteChildren),
+	ApiChatRoute,
+	ApiCloudflareRoute,
+	ApiGithubRoute
+};
+var routeTree = Route$13._addFileChildren(rootRouteChildren)._addFileTypes();
 var router_exports = /* @__PURE__ */ __exportAll({ getRouter: () => getRouter });
 function getRouter() {
 	return createRouter({
@@ -795,4 +888,4 @@ function getRouter() {
 	});
 }
 //#endregion
-export { getModel as i, STUDIO_MODELS as r, router_exports as t };
+export { getModel as a, STUDIO_MODELS as i, Route as n, router_exports as t };

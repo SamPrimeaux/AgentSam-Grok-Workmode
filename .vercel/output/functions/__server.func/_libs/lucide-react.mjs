@@ -358,46 +358,9 @@ var KeyRound = createLucideIcon("key-round", [["path", {
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
-var Menu = createLucideIcon("menu", [
-	["path", {
-		d: "M4 12h16",
-		key: "1lakjw"
-	}],
-	["path", {
-		d: "M4 18h16",
-		key: "19g7jn"
-	}],
-	["path", {
-		d: "M4 6h16",
-		key: "1o0s65"
-	}]
-]);
-/**
-* @license lucide-react v0.510.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
 var MessageSquare = createLucideIcon("message-square", [["path", {
 	d: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
 	key: "1lielz"
-}]]);
-/**
-* @license lucide-react v0.510.0 - ISC
-*
-* This source code is licensed under the ISC license.
-* See the LICENSE file in the root directory of this source tree.
-*/
-var PanelLeft = createLucideIcon("panel-left", [["rect", {
-	width: "18",
-	height: "18",
-	x: "3",
-	y: "3",
-	rx: "2",
-	key: "afitv7"
-}], ["path", {
-	d: "M9 3v18",
-	key: "fh3hqa"
 }]]);
 /**
 * @license lucide-react v0.510.0 - ISC
@@ -621,6 +584,42 @@ var Upload = createLucideIcon("upload", [
 * This source code is licensed under the ISC license.
 * See the LICENSE file in the root directory of this source tree.
 */
+var WifiOff = createLucideIcon("wifi-off", [
+	["path", {
+		d: "M12 20h.01",
+		key: "zekei9"
+	}],
+	["path", {
+		d: "M8.5 16.429a5 5 0 0 1 7 0",
+		key: "1bycff"
+	}],
+	["path", {
+		d: "M5 12.859a10 10 0 0 1 5.17-2.69",
+		key: "1dl1wf"
+	}],
+	["path", {
+		d: "M19 12.859a10 10 0 0 0-2.007-1.523",
+		key: "4k23kn"
+	}],
+	["path", {
+		d: "M2 8.82a15 15 0 0 1 4.177-2.643",
+		key: "1grhjp"
+	}],
+	["path", {
+		d: "M22 8.82a15 15 0 0 0-11.288-3.764",
+		key: "z3jwby"
+	}],
+	["path", {
+		d: "m2 2 20 20",
+		key: "1ooewy"
+	}]
+]);
+/**
+* @license lucide-react v0.510.0 - ISC
+*
+* This source code is licensed under the ISC license.
+* See the LICENSE file in the root directory of this source tree.
+*/
 var X = createLucideIcon("x", [["path", {
 	d: "M18 6 6 18",
 	key: "1bl5f8"
@@ -629,4 +628,4 @@ var X = createLucideIcon("x", [["path", {
 	key: "d8bk6v"
 }]]);
 //#endregion
-export { ArrowUp as A, Download as C, ChevronDown as D, Cloud as E, ArrowLeft as M, Check as O, Ellipsis as S, Columns2 as T, KeyRound as _, Square as a, FolderGit2 as b, Search as c, Play as d, Pin as f, Menu as g, MessageSquare as h, Trash2 as i, ArrowRight as j, Box as k, RotateCw as l, PanelLeft as m, Upload as n, SquareTerminal as o, Paperclip as p, TriangleAlert as r, Share as s, X as t, Plus as u, Globe as v, Copy as w, FileCode as x, Github as y };
+export { ArrowRight as A, Copy as C, Check as D, ChevronDown as E, Box as O, Download as S, Cloud as T, Globe as _, Trash2 as a, FileCode as b, Share as c, Plus as d, Play as f, KeyRound as g, MessageSquare as h, TriangleAlert as i, ArrowLeft as j, ArrowUp as k, Search as l, Paperclip as m, WifiOff as n, Square as o, Pin as p, Upload as r, SquareTerminal as s, X as t, RotateCw as u, Github as v, Columns2 as w, Ellipsis as x, FolderGit2 as y };

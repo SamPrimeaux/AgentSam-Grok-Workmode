@@ -1,13 +1,20 @@
+import { useEffect, useState } from "react";
 import { WifiOff } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useOnline } from "@/hooks/use-online";
 import { useWorkStore } from "@/lib/work/store";
 
 export function OfflineBanner() {
+  const [mounted, setMounted] = useState(false);
   const online = useOnline();
   const queued = useWorkStore((s) => s.offlineQueue.length);
 
-  if (online) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Avoid SSR/client mismatch — navigator.onLine is only meaningful after mount.
+  if (!mounted || online) return null;
 
   return (
     <div

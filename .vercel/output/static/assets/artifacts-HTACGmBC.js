@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-B-hcVAMW.js";import{t}from"./artifacts-D4Aniij-.js";var n=e();function r(){return(0,n.jsx)(`div`,{className:`h-full min-h-0`,children:(0,n.jsx)(t,{})})}export{r as component};

@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/trails",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "AgentSam",
+      "hasCanvas": false,
+      "bodyTextLen": 56,
+      "bodyTextHash": "25cf88f409d9150d8a9c0d2649c9075e5ccd25353e3bc8b8bf7368c108a3cae7",
+      "bodyTextPrefix": "Studio Work PINNED Studio Apr 30 INNERANIMALMEDIA Studio",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/studio-trails.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "AgentSam",
+      "hasCanvas": false,
+      "bodyTextLen": 56,
+      "bodyTextHash": "25cf88f409d9150d8a9c0d2649c9075e5ccd25353e3bc8b8bf7368c108a3cae7",
+      "bodyTextPrefix": "Studio Work PINNED Studio Apr 30 INNERANIMALMEDIA Studio",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/studio-trails-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/studio-trails.json"
+}
