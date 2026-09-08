@@ -4,7 +4,8 @@ Calm vibecode bench: persistent trails, helper chats, in-app browser, Monaco, xt
 
 **Repo:** [SamPrimeaux/AgentSam-Grok-Workmode](https://github.com/SamPrimeaux/AgentSam-Grok-Workmode)  
 **Canonical D1:** `inneranimalmedia-business` (`cf87b717-d4e2-4cf8-bab0-a81268e32d49`)  
-**Target runtime:** Cloudflare Worker (same account / control plane as Inner Animal Media)
+**Live vault Worker:** https://agentsam-workmode.meauxbility.workers.dev  
+**Health:** `GET /health` → `{ ok, d1, vault_key, api_key }`
 
 ---
 
@@ -134,12 +135,32 @@ npx wrangler secret put BETTER_AUTH_SECRET
 npx wrangler secret put XAI_API_KEY        # server-only model calls
 ```
 
-### Deploy this Worker
+### Deploy this Worker (vault API — live)
+
+Entry: `worker/index.js` · config: `wrangler.workmode.toml`
 
 ```bash
-npm run build
-npx wrangler deploy -c wrangler.toml
+# from IAM desk (credentials via .env.cloudflare wrapper)
+./scripts/with-cloudflare-env.sh npx wrangler deploy -c wrangler.workmode.toml
+
+# secrets (once per account/script)
+openssl rand -base64 32 | npx wrangler secret put VAULT_MASTER_KEY --name agentsam-workmode
+openssl rand -hex 24   | npx wrangler secret put WORKMODE_API_KEY --name agentsam-workmode
 ```
+
+Smoke (replace bearer + user):
+
+```bash
+curl -sS https://agentsam-workmode.meauxbility.workers.dev/health
+
+curl -sS -X POST https://agentsam-workmode.meauxbility.workers.dev/api/vault/secrets \
+  -H "Authorization: Bearer $WORKMODE_API_KEY" \
+  -H "X-User-Id: au_…" \
+  -H "content-type: application/json" \
+  -d '{"service_name":"github","secret_name":"ship","value":"ghp_…"}'
+```
+
+Routes: `GET/POST /api/vault/secrets`, `DELETE /api/vault/secrets/:id`, `POST /api/vault/unwrap` (server-only).
 
 For the **full IAM platform** (dashboard + R2 + Worker), use the monorepo ship lane — not a bare `wrangler deploy` from that repo:
 

@@ -3,7 +3,7 @@
 **Goal:** When a user connects Cloudflare and/or GitHub, or pastes a BYOK API key, the secret is **encrypted at rest**, **usable only by server routes** owned by that user, and **audited**. The app becomes a safe control plane, not a token notepad.
 
 **Database:** Cloudflare D1 `inneranimalmedia-business`  
-**Status:** Schema exists · Workmode UI still uses interim `localStorage` · implementation outstanding
+**Status:** Vault Worker **live** at `https://agentsam-workmode.meauxbility.workers.dev` (D1 bound, AES-GCM create/list/unwrap/revoke smoked). Workmode UI still uses interim `localStorage` until Connect is wired to this Worker.
 
 ---
 
