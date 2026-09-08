@@ -1,0 +1,36 @@
+# AgentSam Workmode — Cloudflare Worker + D1 binding (example)
+# Copy to wrangler.toml and adjust the Worker name if needed:
+#   cp wrangler.toml.example wrangler.toml
+#
+# Secrets (set via CLI, never commit):
+#   npx wrangler secret put VAULT_MASTER_KEY
+#   npx wrangler secret put BETTER_AUTH_SECRET
+#
+# Deploy:
+#   npm run build && npx wrangler deploy -c wrangler.toml
+
+name = "agentsam-workmode"
+main = "dist/server/index.js"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Account is resolved from `wrangler login` or CLOUDFLARE_ACCOUNT_ID.
+# Production app DB (SSOT):
+[[d1_databases]]
+binding = "DB"
+database_name = "inneranimalmedia-business"
+database_id = "cf87b717-d4e2-4cf8-bab0-a81268e32d49"
+
+# Optional: session / OAuth state cache
+# [[kv_namespaces]]
+# binding = "SESSION_CACHE"
+# id = "<kv-namespace-id>"
+
+# Optional: artifacts / static assets
+# [[r2_buckets]]
+# binding = "R2"
+# bucket_name = "inneranimalmedia"
+
+[vars]
+WORKMODE_APP = "agentsam-workmode"
+D1_DATABASE_NAME = "inneranimalmedia-business"
