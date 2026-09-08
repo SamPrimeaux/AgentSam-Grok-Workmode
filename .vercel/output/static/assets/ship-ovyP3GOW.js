@@ -1,1 +1,0 @@
-import{t as e}from"./jsx-runtime-B-hcVAMW.js";import{t}from"./deploy-BGFemBFf.js";var n=e();function r(){return(0,n.jsx)(`div`,{className:`h-full min-h-0 overflow-y-auto`,children:(0,n.jsx)(t,{})})}export{r as component};
