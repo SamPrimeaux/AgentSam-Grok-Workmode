@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Columns2, Maximize2, Share, SquareTerminal, Users } from "lucide-react";
+import { ArrowLeft, Columns2, Maximize2, Settings, Share, SquareTerminal, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -22,6 +22,7 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
   const renameTrail = useWorkStore((s) => s.renameTrail);
   const setActiveTrail = useWorkStore((s) => s.setActiveTrail);
   const toggleTerminal = useWorkStore((s) => s.toggleTerminal);
+  const setSettingsOpen = useWorkStore((s) => s.setSettingsOpen);
   const [railW, setRailW] = useState(288);
   const [sideW, setSideW] = useState(420);
   const [stageFull, setStageFull] = useState(false);
@@ -143,6 +144,21 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
               </Button>
             </TooltipTrigger>
             <TooltipContent>Fullscreen + composer</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                className="size-11 md:size-8"
+                aria-label="Settings"
+                onClick={() => setSettingsOpen(true)}
+              >
+                <Settings className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Settings</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
