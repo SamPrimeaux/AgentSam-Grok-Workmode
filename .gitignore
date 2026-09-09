@@ -9,3 +9,5 @@ wrangler.toml
 .vercel/
 screenshots/
 /tmp/
+!.env.cloudflare.example
+.agentsam/

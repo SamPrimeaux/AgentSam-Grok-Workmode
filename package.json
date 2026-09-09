@@ -22,10 +22,15 @@
     "cf:whoami": "wrangler whoami",
     "cf:d1:list": "wrangler d1 list",
     "cf:d1:tables": "wrangler d1 execute inneranimalmedia-business --remote --command=\"SELECT name FROM sqlite_master WHERE type='table' AND (name LIKE '%secret%' OR name LIKE '%oauth%' OR name='agentsam_user_ui_preferences') ORDER BY name;\"",
-    "cf:deploy": "wrangler deploy -c app/backend/wrangler.workmode.toml",
+    "cf:deploy": "bash scripts/with-cloudflare-env.sh npx wrangler deploy -c app/backend/wrangler.workmode.toml",
     "cf:tail": "wrangler tail agentsam-workmode",
     "cf:tail:ui": "wrangler tail agentsam-grok-workmode",
-    "build:with-migrate": "node scripts/with-app-env.mjs vite build && npm run db:migrate"
+    "build:with-migrate": "node scripts/with-app-env.mjs vite build && npm run db:migrate",
+    "agentsam": "agentsam",
+    "sdk": "agentsam",
+    "dockerize": "agentsam dockerize --type wrangler_dev --name agentsam-grok-workmode",
+    "dockerize:write": "agentsam dockerize --type wrangler_dev --name agentsam-grok-workmode --write-only",
+    "cf:env": "bash scripts/with-cloudflare-env.sh"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
@@ -85,7 +90,8 @@
     "tw-animate-css": "^1.3.4",
     "vaul": "^1.1.2",
     "zod": "^4.4.0",
-    "zustand": "^5.0.0"
+    "zustand": "^5.0.0",
+    "@inneranimalmedia/agentsam-sdk": "github:SamPrimeaux/agentsam-sdk#main"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
