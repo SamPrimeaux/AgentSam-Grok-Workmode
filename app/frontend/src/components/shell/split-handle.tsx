@@ -59,19 +59,19 @@ export function SplitHandle({
       onPointerUp={stop}
       onPointerCancel={stop}
       className={cn(
-        "group relative z-20 shrink-0 touch-none",
-        axis === "x" ? "w-2 cursor-col-resize" : "h-2 cursor-row-resize",
+        "group relative z-20 shrink-0 touch-none outline-none",
+        axis === "x" ? "w-2 cursor-col-resize self-stretch" : "h-2 cursor-row-resize w-full",
       )}
     >
       <span
         className={cn(
-          "pointer-events-none absolute rounded-full bg-stone/25 transition-all duration-150",
-          "group-hover:bg-clay group-hover:shadow-[0_0_14px_rgba(196,184,168,0.55)]",
-          "group-active:bg-foreground group-active:shadow-[0_0_18px_rgba(243,241,236,0.45)]",
-          "group-focus-visible:bg-clay",
+          "pointer-events-none absolute bg-border/80 transition-shadow duration-150",
+          "group-hover:shadow-[0_0_0_1px_var(--color-ring)]",
+          "group-focus-visible:shadow-[0_0_0_1px_var(--color-ring)]",
+          "group-active:shadow-[0_0_0_1px_var(--color-ring)]",
           axis === "x"
-            ? "top-1/2 left-1/2 h-12 w-px -translate-x-1/2 -translate-y-1/2 group-hover:h-24 group-hover:w-0.5"
-            : "top-1/2 left-1/2 h-px w-12 -translate-x-1/2 -translate-y-1/2 group-hover:h-0.5 group-hover:w-24",
+            ? "inset-y-0 left-1/2 w-px -translate-x-1/2"
+            : "inset-x-0 top-1/2 h-px -translate-y-1/2",
         )}
       />
     </div>
