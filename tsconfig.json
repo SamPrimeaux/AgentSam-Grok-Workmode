@@ -30,7 +30,7 @@
     "allowImportingTsExtensions": true
   },
   "include": [
-    "src",
-    "server"
+    "app/frontend/src",
+    "app/backend/server"
   ]
 }

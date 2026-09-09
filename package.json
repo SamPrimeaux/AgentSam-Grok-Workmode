@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "node scripts/with-app-env.mjs vite dev --host 0.0.0.0 --port 8080",
-    "build": "node scripts/with-app-env.mjs vite build && npm run db:migrate",
+    "build": "node scripts/with-app-env.mjs vite build",
     "db:migrate": "node scripts/migrate.mjs",
     "build:dev": "node scripts/with-app-env.mjs vite build --mode development",
     "preview": "node scripts/with-app-env.mjs vite preview",
@@ -24,7 +24,8 @@
     "cf:d1:tables": "wrangler d1 execute inneranimalmedia-business --remote --command=\"SELECT name FROM sqlite_master WHERE type='table' AND (name LIKE '%secret%' OR name LIKE '%oauth%' OR name='agentsam_user_ui_preferences') ORDER BY name;\"",
     "cf:deploy": "wrangler deploy -c app/backend/wrangler.workmode.toml",
     "cf:tail": "wrangler tail agentsam-workmode",
-    "cf:tail:ui": "wrangler tail agentsam-grok-workmode"
+    "cf:tail:ui": "wrangler tail agentsam-grok-workmode",
+    "build:with-migrate": "node scripts/with-app-env.mjs vite build && npm run db:migrate"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
