@@ -12,10 +12,10 @@ import { grokPwaPlugin } from "./scripts/grok-pwa-plugin.mjs";
 import { appEnvPlugin } from "./scripts/app-env-plugin.mjs";
 import { isMigrationFile } from "./scripts/migration-plan.mjs";
 
-/** The files `src/lib/db.ts` globs — same directory, same non-recursive scope. */
+/** The files `app/frontend/src/lib/db.ts` globs — same directory, same non-recursive scope. */
 function hasGlobbedMigrations(root: string): boolean {
   try {
-    return readdirSync(join(root, "migrations")).some(isMigrationFile);
+    return readdirSync(join(root, "app/backend/migrations")).some(isMigrationFile);
   } catch {
     return false;
   }
@@ -37,7 +37,7 @@ function pgliteBootstrapPlugin(): Plugin {
     async configureServer(server) {
       if (!hasGlobbedMigrations(server.config.root)) return;
       try {
-        const mod = (await server.ssrLoadModule("/src/lib/db.ts")) as {
+        const mod = (await server.ssrLoadModule("/app/frontend/src/lib/db.ts")) as {
           ensureDbReady?: () => Promise<void>;
         };
         if (typeof mod.ensureDbReady === "function") {
@@ -68,7 +68,7 @@ function authPopupPlugin(): Plugin {
     configureServer(server) {
       // Register immediately (not in a returned post-hook) so we run BEFORE
       // TanStack Start / the SPA HTML fallback. A model-authored
-      // `src/routes/auth/popup.tsx` React page must never win this path.
+      // `app/frontend/src/routes/auth/popup.tsx` React page must never win this path.
       server.middlewares.use(async (req, res, next) => {
         try {
           const rawUrl = req.url ?? "";
@@ -143,7 +143,7 @@ function authPopupPlugin(): Plugin {
 }
 
 // `0.0.0.0:8080` is the live-preview contract — don't change host/port.
-// The dev server starts once `src/router.tsx` and `src/routes/` exist — see
+// The dev server starts once `src/router.tsx` and `app/frontend/src/routes/` exist — see
 // AGENTS.md § "First scaffold".
 export default defineConfig(({ command, isPreview }) => ({
   server: {
