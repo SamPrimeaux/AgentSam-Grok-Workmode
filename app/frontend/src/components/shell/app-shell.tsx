@@ -11,6 +11,7 @@ import { registerOfflineShell } from "@/lib/offline/register-sw";
 import { useOnline } from "@/hooks/use-online";
 import { cn } from "@/lib/utils";
 import { useWorkStore } from "@/lib/work/store";
+import { applyTheme, readTheme } from "@/lib/work/theme";
 
 export function AppShell() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export function AppShell() {
       useWorkStore.getState().setHydrated(true);
     });
     if (useWorkStore.persist.hasHydrated()) useWorkStore.getState().setHydrated(true);
+    applyTheme(readTheme());
     registerOfflineShell();
     return unsub;
   }, []);
