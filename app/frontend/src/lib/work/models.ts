@@ -4,6 +4,8 @@ export type StudioModel = {
   short: string;
   hint: string;
   maxTokens: number;
+  computerUse?: boolean;
+  managedEnv?: boolean;
 };
 
 export const STUDIO_MODELS: StudioModel[] = [
@@ -41,6 +43,23 @@ export const STUDIO_MODELS: StudioModel[] = [
     short: "Build",
     hint: "Vibecode",
     maxTokens: 4800,
+  },
+  {
+    id: "gemini-3.8-flash",
+    label: "Gemini 3.8 Flash",
+    short: "G3.8",
+    hint: "Computer use · browser/mobile/desktop",
+    maxTokens: 8000,
+    computerUse: true,
+  },
+  {
+    id: "antigravity-preview-05-2026",
+    label: "Antigravity",
+    short: "AG",
+    hint: "Managed remote environment",
+    maxTokens: 8000,
+    managedEnv: true,
+    computerUse: true,
   },
 ];
 

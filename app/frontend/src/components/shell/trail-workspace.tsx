@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, Columns2, Share, SquareTerminal, Users } from "lucide-react";
+import { ArrowLeft, Columns2, Maximize2, Share, SquareTerminal, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TrailThread } from "@/components/workbench/thread";
 import { SideStage } from "@/components/workbench/side-stage";
 import { TrailsPanel } from "@/components/shell/studio-panels";
+import { SplitHandle } from "@/components/shell/split-handle";
+import { ComputerFullscreen } from "@/components/workbench/computer-stage";
 import { cn } from "@/lib/utils";
 import { useWorkStore } from "@/lib/work/store";
 import type { Trail } from "@/lib/work/types";
@@ -20,6 +22,9 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
   const renameTrail = useWorkStore((s) => s.renameTrail);
   const setActiveTrail = useWorkStore((s) => s.setActiveTrail);
   const toggleTerminal = useWorkStore((s) => s.toggleTerminal);
+  const [railW, setRailW] = useState(288);
+  const [sideW, setSideW] = useState(420);
+  const [stageFull, setStageFull] = useState(false);
 
   useEffect(() => {
     setActiveTrail(trail.id);
@@ -51,9 +56,20 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
 
   return (
     <div className="flex h-full min-h-0">
-      <aside className="hidden h-full w-[min(20rem,32vw)] shrink-0 border-r border-border md:block">
+      <aside
+        className="hidden h-full min-w-0 shrink-0 md:block"
+        style={{ width: railW, flexBasis: railW }}
+      >
         <TrailsPanel activeId={trail.id} showBrandFooter={false} />
       </aside>
+      <div className="hidden md:block">
+      <SplitHandle
+        axis="x"
+        label="Resize chat list"
+        onDrag={(d) => setRailW((w) => Math.min(420, Math.max(200, w + d)))}
+        onDoubleClick={() => setRailW(288)}
+      />
+      </div>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header className="flex min-h-12 shrink-0 items-center gap-1 border-b border-border px-2">
@@ -118,6 +134,21 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
               <Button
                 type="button"
                 size="icon"
+                variant={stageFull ? "secondary" : "ghost"}
+                className="size-11 md:size-8"
+                aria-label="Fullscreen computer use"
+                onClick={() => setStageFull(true)}
+              >
+                <Maximize2 className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Fullscreen + composer</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                size="icon"
                 variant={sideOpen ? "secondary" : "ghost"}
                 className="hidden size-8 md:inline-flex"
                 aria-label="Toggle side stage"
@@ -142,12 +173,21 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
                 className="fixed inset-0 z-40 bg-ink/60 md:hidden"
                 onClick={() => setSideOpen(false)}
               />
+              <div className="hidden md:block">
+                <SplitHandle
+                  axis="x"
+                  label="Resize side stage"
+                  onDrag={(d) => setSideW((w) => Math.min(720, Math.max(280, w - d)))}
+                  onDoubleClick={() => setSideW(420)}
+                />
+              </div>
               <aside
                 className={cn(
-                  "min-h-0 bg-background",
+                  "min-h-0 min-w-0 bg-background",
                   "max-md:fixed max-md:inset-0 max-md:z-50",
-                  "md:relative md:w-[min(46vw,32rem)] md:shrink-0 md:border-l md:border-border",
+                  "md:relative md:shrink-0",
                 )}
+                style={{ width: sideW, flexBasis: sideW }}
               >
                 <SideStage />
               </aside>
@@ -155,6 +195,7 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
           ) : null}
         </div>
       </div>
+      <ComputerFullscreen open={stageFull} onClose={() => setStageFull(false)} />
     </div>
   );
 }
