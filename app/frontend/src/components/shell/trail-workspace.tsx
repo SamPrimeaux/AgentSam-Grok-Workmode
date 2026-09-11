@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, Columns2, Maximize2, Settings, Share, SquareTerminal, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -31,6 +31,10 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
     setActiveTrail(trail.id);
   }, [trail.id, setActiveTrail]);
 
+  function lightPane(event: PointerEvent<HTMLElement>, on: boolean) {
+    event.currentTarget.setAttribute("data-pane", on ? "hover" : "idle");
+  }
+
   function toggleDual() {
     if (sideOpen) {
       setSideOpen(false);
@@ -56,21 +60,22 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
   }
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="studio-workspace flex h-full min-h-0">
       <aside
-        className="hidden h-full min-w-0 shrink-0 md:block"
+        className="studio-pane hidden h-full min-w-0 shrink-0 md:block"
         style={{ width: railW, flexBasis: railW }}
+        onPointerEnter={(e) => lightPane(e, true)}
+        onPointerLeave={(e) => lightPane(e, false)}
       >
         <TrailsPanel activeId={trail.id} showBrandFooter={false} />
       </aside>
-      <div className="hidden md:block">
       <SplitHandle
         axis="x"
         label="Resize chat list"
+        className="hidden md:flex"
         onDrag={(d) => setRailW((w) => Math.min(420, Math.max(200, w + d)))}
         onDoubleClick={() => setRailW(288)}
       />
-      </div>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header className="flex min-h-12 shrink-0 items-center gap-1 border-b border-border px-2">
@@ -177,8 +182,12 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
           </Tooltip>
         </header>
 
-        <div className="flex min-h-0 min-w-0 flex-1">
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <div className="studio-workspace flex min-h-0 min-w-0 flex-1">
+          <div
+            className="studio-pane flex min-h-0 min-w-0 flex-1 flex-col"
+            onPointerEnter={(e) => lightPane(e, true)}
+            onPointerLeave={(e) => lightPane(e, false)}
+          >
             <TrailThread />
           </div>
           {sideOpen ? (
@@ -189,21 +198,22 @@ export function TrailWorkspace({ trail }: { trail: Trail }) {
                 className="fixed inset-0 z-40 bg-ink/60 md:hidden"
                 onClick={() => setSideOpen(false)}
               />
-              <div className="hidden md:block">
-                <SplitHandle
-                  axis="x"
-                  label="Resize side stage"
-                  onDrag={(d) => setSideW((w) => Math.min(720, Math.max(280, w - d)))}
-                  onDoubleClick={() => setSideW(420)}
-                />
-              </div>
+              <SplitHandle
+                axis="x"
+                label="Resize side stage"
+                className="hidden md:flex"
+                onDrag={(d) => setSideW((w) => Math.min(720, Math.max(280, w - d)))}
+                onDoubleClick={() => setSideW(420)}
+              />
               <aside
                 className={cn(
-                  "min-h-0 min-w-0 bg-background",
+                  "studio-pane min-h-0 min-w-0 bg-background",
                   "max-md:fixed max-md:inset-0 max-md:z-50",
                   "md:relative md:shrink-0",
                 )}
                 style={{ width: sideW, flexBasis: sideW }}
+                onPointerEnter={(e) => lightPane(e, true)}
+                onPointerLeave={(e) => lightPane(e, false)}
               >
                 <SideStage />
               </aside>
