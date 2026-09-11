@@ -14,6 +14,8 @@ const buttonVariants = cva(
         outline: "shadow-hairline bg-transparent hover:bg-muted",
         accent: "bg-accent text-accent-foreground hover:bg-accent/90",
         destructive: "text-destructive hover:bg-destructive/10",
+        chip: "rounded-full border border-border bg-transparent text-muted-foreground hover:border-accent/40 hover:text-foreground",
+        chipActive: "rounded-full border-transparent bg-primary text-primary-foreground hover:bg-primary/90",
       },
       size: {
         default: "h-10 px-4",
@@ -21,6 +23,7 @@ const buttonVariants = cva(
         lg: "h-11 px-5",
         icon: "size-10",
         "icon-sm": "size-8 rounded-md",
+        chip: "h-11 rounded-full px-4 text-sm",
       },
     },
     defaultVariants: {

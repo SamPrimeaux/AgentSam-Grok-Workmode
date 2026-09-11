@@ -1,9 +1,14 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { TrailWorkspace } from "@/components/shell/trail-workspace";
 import { Button } from "@/components/ui/button";
 import { useWorkStore } from "@/lib/work/store";
 
 export const Route = createFileRoute("/_app/trails/$trailId")({
+  beforeLoad: ({ params }) => {
+    if (params.trailId === "trail-studio") {
+      throw redirect({ to: "/agentsam" });
+    }
+  },
   component: TrailPage,
 });
 

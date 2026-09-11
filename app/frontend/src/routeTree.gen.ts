@@ -9,8 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
-import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppAgentsamRouteImport } from './routes/_app/agentsam'
 import { Route as AppArtifactsRouteImport } from './routes/_app/artifacts'
 import { Route as AppBrowseRouteImport } from './routes/_app/browse'
 import { Route as AppCliRouteImport } from './routes/_app/cli'
@@ -23,13 +24,18 @@ import { Route as ApiGithubRouteImport } from './routes/api/github'
 import { Route as AppTrailsIndexRouteImport } from './routes/_app/trails/index'
 import { Route as AppTrailsTrailIdRouteImport } from './routes/_app/trails/$trailId'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AppAgentsamRoute = AppAgentsamRouteImport.update({
+  id: '/agentsam',
+  path: '/agentsam',
   getParentRoute: () => AppRoute,
 } as any)
 const AppArtifactsRoute = AppArtifactsRouteImport.update({
@@ -89,7 +95,8 @@ const AppTrailsTrailIdRoute = AppTrailsTrailIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AppIndexRoute
+  '/': typeof IndexRoute
+  '/agentsam': typeof AppAgentsamRoute
   '/artifacts': typeof AppArtifactsRoute
   '/browse': typeof AppBrowseRoute
   '/cli': typeof AppCliRoute
@@ -103,6 +110,8 @@ export interface FileRoutesByFullPath {
   '/trails/': typeof AppTrailsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/agentsam': typeof AppAgentsamRoute
   '/artifacts': typeof AppArtifactsRoute
   '/browse': typeof AppBrowseRoute
   '/cli': typeof AppCliRoute
@@ -112,13 +121,14 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/api/cloudflare': typeof ApiCloudflareRoute
   '/api/github': typeof ApiGithubRoute
-  '/': typeof AppIndexRoute
   '/trails/$trailId': typeof AppTrailsTrailIdRoute
   '/trails': typeof AppTrailsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/_app/agentsam': typeof AppAgentsamRoute
   '/_app/artifacts': typeof AppArtifactsRoute
   '/_app/browse': typeof AppBrowseRoute
   '/_app/cli': typeof AppCliRoute
@@ -128,7 +138,6 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/api/cloudflare': typeof ApiCloudflareRoute
   '/api/github': typeof ApiGithubRoute
-  '/_app/': typeof AppIndexRoute
   '/_app/trails/$trailId': typeof AppTrailsTrailIdRoute
   '/_app/trails/': typeof AppTrailsIndexRoute
 }
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agentsam'
     | '/artifacts'
     | '/browse'
     | '/cli'
@@ -149,6 +159,8 @@ export interface FileRouteTypes {
     | '/trails/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
+    | '/agentsam'
     | '/artifacts'
     | '/browse'
     | '/cli'
@@ -158,12 +170,13 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/cloudflare'
     | '/api/github'
-    | '/'
     | '/trails/$trailId'
     | '/trails'
   id:
     | '__root__'
+    | '/'
     | '/_app'
+    | '/_app/agentsam'
     | '/_app/artifacts'
     | '/_app/browse'
     | '/_app/cli'
@@ -173,12 +186,12 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/api/cloudflare'
     | '/api/github'
-    | '/_app/'
     | '/_app/trails/$trailId'
     | '/_app/trails/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   ApiChatRoute: typeof ApiChatRoute
   ApiCloudflareRoute: typeof ApiCloudflareRoute
@@ -187,6 +200,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app': {
       id: '/_app'
       path: ''
@@ -194,11 +214,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/': {
-      id: '/_app/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AppIndexRouteImport
+    '/_app/agentsam': {
+      id: '/_app/agentsam'
+      path: '/agentsam'
+      fullPath: '/agentsam'
+      preLoaderRoute: typeof AppAgentsamRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/artifacts': {
@@ -282,25 +302,25 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppAgentsamRoute: typeof AppAgentsamRoute
   AppArtifactsRoute: typeof AppArtifactsRoute
   AppBrowseRoute: typeof AppBrowseRoute
   AppCliRoute: typeof AppCliRoute
   AppFilesRoute: typeof AppFilesRoute
   AppProjectsRoute: typeof AppProjectsRoute
   AppShipRoute: typeof AppShipRoute
-  AppIndexRoute: typeof AppIndexRoute
   AppTrailsTrailIdRoute: typeof AppTrailsTrailIdRoute
   AppTrailsIndexRoute: typeof AppTrailsIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAgentsamRoute: AppAgentsamRoute,
   AppArtifactsRoute: AppArtifactsRoute,
   AppBrowseRoute: AppBrowseRoute,
   AppCliRoute: AppCliRoute,
   AppFilesRoute: AppFilesRoute,
   AppProjectsRoute: AppProjectsRoute,
   AppShipRoute: AppShipRoute,
-  AppIndexRoute: AppIndexRoute,
   AppTrailsTrailIdRoute: AppTrailsTrailIdRoute,
   AppTrailsIndexRoute: AppTrailsIndexRoute,
 }
@@ -308,6 +328,7 @@ const AppRouteChildren: AppRouteChildren = {
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   ApiChatRoute: ApiChatRoute,
   ApiCloudflareRoute: ApiCloudflareRoute,

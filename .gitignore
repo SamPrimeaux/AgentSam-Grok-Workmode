@@ -11,3 +11,4 @@ screenshots/
 /tmp/
 !.env.cloudflare.example
 .agentsam/
+.output/

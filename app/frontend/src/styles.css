@@ -3,6 +3,7 @@
 
 @theme {
   --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --color-background: #070708;
@@ -29,6 +30,9 @@
   --color-paper: #f3f1ec;
   --color-ink: #070708;
   --color-bone: #f3f1ec;
+  --color-bg: #070708;
+  --color-fg: #f3f1ec;
+  --color-surface: #121214;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -518,4 +522,23 @@ body[data-split-hover] .studio-pane::after {
   .split-grip {
     transition: none !important;
   }
+}
+
+@keyframes grid-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 0 48px, 48px 0; }
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgb(196 184 168 / 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(196 184 168 / 0.16) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: rotateX(62deg) scale(1.35);
+  transform-origin: center top;
+  animation: grid-drift 12s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-grid { animation: none !important; }
 }

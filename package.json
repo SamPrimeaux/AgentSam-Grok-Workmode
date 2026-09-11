@@ -30,11 +30,13 @@
     "sdk": "agentsam",
     "dockerize": "agentsam dockerize --type wrangler_dev --name agentsam-grok-workmode",
     "dockerize:write": "agentsam dockerize --type wrangler_dev --name agentsam-grok-workmode --write-only",
-    "cf:env": "bash scripts/with-cloudflare-env.sh"
+    "cf:env": "bash scripts/with-cloudflare-env.sh",
+    "cf:deploy:ui": "bash scripts/with-cloudflare-env.sh npx wrangler deploy -c wrangler.ui.toml"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
     "@hookform/resolvers": "^5.7.0",
+    "@inneranimalmedia/agentsam-sdk": "^2.4.1",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -90,8 +92,7 @@
     "tw-animate-css": "^1.3.4",
     "vaul": "^1.1.2",
     "zod": "^4.4.0",
-    "zustand": "^5.0.0",
-    "@inneranimalmedia/agentsam-sdk": "github:SamPrimeaux/agentsam-sdk#main"
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",

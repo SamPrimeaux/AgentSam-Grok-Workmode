@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useWorkStore } from "@/lib/work/store";
 
 const ITEMS = [
-  { to: "/trails", label: "Chats", icon: MessageSquare, match: (p: string) => p === "/" || p.startsWith("/trails") },
+  { to: "/agentsam", label: "Studio", icon: MessageSquare, match: (p: string) => p === "/agentsam" || p.startsWith("/trails") },
   { to: "/projects", label: "Projects", icon: FolderGit2, match: (p: string) => p.startsWith("/projects") },
   { to: "/artifacts", label: "Artifacts", icon: Box, match: (p: string) => p.startsWith("/artifacts") },
   { to: "/files", label: "Files", icon: FileCode, match: (p: string) => p.startsWith("/files") },
@@ -24,7 +24,7 @@ export function NavRail() {
       className="flex w-14 shrink-0 flex-col items-center gap-1 border-r border-border bg-sidebar py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:w-12"
     >
       <Link
-        to="/trails"
+        to="/agentsam"
         aria-label="Studio home"
         className="mb-2 flex size-11 items-center justify-center rounded-xl text-accent md:size-9"
       >
