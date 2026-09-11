@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #070708;
+  --color-fg: #f3f1ec;
+  --color-bone: #f3f1ec;
+  --color-stone: #c4b8a8;
+  --color-clay: #8a7f72;
+  --color-muted: #8a7f72;
+  --color-surface: #121214;
+  --color-card: #161618;
+  --color-sidebar: #0b0b0c;
+  --color-border: rgb(243 241 236 / 0.1);
+  --color-hairline: rgb(243 241 236 / 0.12);
+  --color-accent: #c4b8a8;
+  --color-accent-fg: #070708;
+  --color-ring: #c4b8a8;
+
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
+
+  --shadow-border: 0 0 0 1px rgb(243 241 236 / 0.08);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background-color: var(--color-stone);
+    color: var(--color-bg);
+  }
+
+  img.framed {
+    outline: 1px solid rgb(243 241 236 / 0.12);
+    outline-offset: -1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hero-grid,
+  .agent-status {
+    animation: none !important;
+  }
+}
+
+@keyframes grid-drift {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 0 48px, 48px 0;
+  }
+}
+
+@keyframes status-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -20% 0;
+  }
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgb(196 184 168 / 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(196 184 168 / 0.16) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transform: rotateX(62deg) scale(1.35);
+  transform-origin: center top;
+  animation: grid-drift 12s linear infinite;
+}
+
+.agent-status {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-clay) 0%,
+    var(--color-bone) 45%,
+    var(--color-stone) 55%,
+    var(--color-clay) 100%
+  );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: status-shimmer 2.4s linear infinite;
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(196 184 168 / 0.25) transparent;
+}
